@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Оформление заказа — TankUp</title>
+<title>Заявка — Boost_WM</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Manrope:wght@400;600;700&display=swap">
 <style>
 :root{
   --bg:#0D1015;--surf:#151A22;--surf2:#1C2330;--line:#283142;
-  --text:#E8ECF3;--muted:#8C97AA;--gold:#F0B44C;--gold-ink:#1A1206;--steel:#6F8BB8;--tg:#2AABEE;
+  --text:#E8ECF3;--muted:#8C97AA;--gold:#F0B44C;--gold-ink:#1A1206;--steel:#6F8BB8;--danger:#E0645A;--ok:#5BC08A;
   --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
   --body:"Manrope","Segoe UI",system-ui,sans-serif;
   color-scheme:dark;
@@ -16,127 +16,254 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text)}
 body{font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;
-  background:radial-gradient(900px 500px at 85% -10%,color-mix(in srgb,var(--gold) 10%,transparent),transparent 60%),var(--bg)}
+  background:radial-gradient(900px 500px at 85% -10%,color-mix(in srgb,var(--gold) 9%,transparent),transparent 60%),var(--bg)}
+[hidden]{display:none!important}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-.wrap{max-width:980px;margin:0 auto;padding-inline:20px}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px}
 .top{border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.top .wrap{max-width:980px;display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
 .logo{font:700 22px/1 var(--display);text-decoration:none;display:flex;align-items:center;gap:10px}
 .logo i{display:inline-flex;align-items:flex-end;gap:2px;height:18px}
 .logo i b{width:4px;background:var(--gold);border-radius:1px}
 .back{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
 .back:hover{color:var(--text)}
-main{padding-block:48px 72px}
+main{padding-block:40px 80px}
 .eyebrow{font:600 12px/1.4 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-h1{font:700 clamp(32px,5vw,52px)/1.05 var(--display);margin:10px 0 12px;text-wrap:balance}
-.lead{color:var(--muted);margin:0 0 32px;max-width:56ch}
-.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:start}
-@media (max-width:820px){.grid{grid-template-columns:1fr}}
-.card{border:1px solid var(--line);border-radius:16px;background:var(--surf);padding:24px}
-.label{font:600 12px/1.4 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;display:block}
-textarea{width:100%;min-height:170px;resize:vertical;font:15px/1.55 var(--body);color:var(--text);background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:14px}
-textarea:focus{outline:none;border-color:var(--gold)}
-.hint{font-size:13px;color:var(--muted);margin:10px 0 0}
-.tg{border-color:color-mix(in srgb,var(--tg) 55%,var(--line));background:radial-gradient(circle at 100% 0,color-mix(in srgb,var(--tg) 16%,transparent),transparent 60%),var(--surf);display:flex;flex-direction:column;gap:18px}
-.tg-head{display:flex;align-items:center;gap:14px}
-.tg-ico{width:52px;height:52px;border-radius:50%;background:var(--tg);display:grid;place-items:center;flex:none}
-.tg-name{font:700 22px/1.1 var(--display);overflow-wrap:anywhere}
-.tg-sub{color:var(--muted);font-size:14px}
-.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:s}
-.steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;font-size:15px}
-.steps li::before{counter-increment:s;content:counter(s);width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font:700 13px/1 var(--display);color:var(--gold)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 16px/1 var(--body);padding:16px 22px;border-radius:12px;border:0;cursor:pointer;text-decoration:none;transition:transform .15s,filter .15s}
+h1{font:700 clamp(30px,5vw,46px)/1.05 var(--display);margin:10px 0 10px;text-wrap:balance}
+.lead{color:var(--muted);margin:0 0 28px}
+form{display:flex;flex-direction:column;gap:16px}
+.card{border:1px solid var(--line);border-radius:16px;background:var(--surf);padding:22px;display:flex;flex-direction:column;gap:16px;animation:in .5s cubic-bezier(.2,.8,.2,1) both}
+.card:nth-of-type(2){animation-delay:.06s}.card:nth-of-type(3){animation-delay:.12s}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card h2{font:700 19px/1.2 var(--display);margin:0;display:flex;align-items:center;gap:10px}
+.card h2 span{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);display:inline-grid;place-items:center;font-size:13px;color:var(--gold)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:600px){.row{grid-template-columns:1fr}}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label{font-size:13px;font-weight:600;color:var(--muted)}
+.fld label i{color:var(--gold);font-style:normal}
+input,select,textarea{width:100%;font:15px/1.4 var(--body);color:var(--text);background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+textarea{min-height:90px;resize:vertical}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:var(--danger)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.svc-info{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:baseline;padding:12px 14px;border-radius:10px;background:var(--surf2)}
+.svc-info p{margin:0;color:var(--muted);font-size:14px;white-space:pre-line;flex:1 1 240px}
+.svc-info b{font:700 20px/1 var(--display);color:var(--gold);white-space:nowrap}
+.terms{border:1px solid color-mix(in srgb,var(--gold) 40%,var(--line));background:color-mix(in srgb,var(--gold) 7%,transparent);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.terms .t-title{font-weight:700;color:var(--gold);font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+.terms ul{margin:0;padding-left:20px}
+.check{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-weight:600;font-size:15px}
+.check input{width:20px;height:20px;flex:none;margin:2px 0 0;accent-color:var(--gold)}
+.calc-note{font-size:14px;padding:10px 12px;border-radius:10px;border:1px dashed var(--line);color:var(--muted)}
+.calc-note b{color:var(--text)}
+.submit{display:flex;flex-direction:column;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 16px/1 var(--body);padding:17px 22px;border-radius:12px;border:0;cursor:pointer;text-decoration:none;background:var(--gold);color:var(--gold-ink);transition:transform .15s,filter .15s,opacity .2s}
 .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn.tgb{background:var(--tg);color:#fff;width:100%}
-.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);width:100%;font-size:15px;padding:13px 18px}
-.alt{display:flex;flex-direction:column;gap:10px}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--surf2);border:1px solid var(--gold);border-radius:10px;padding:12px 18px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);text-align:center;transition:opacity .25s,transform .25s;box-shadow:0 10px 30px rgba(0,0,0,.45)}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.in{animation:in .6s cubic-bezier(.2,.8,.2,1) both}
-.in:nth-child(2){animation-delay:.08s}
-@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.in{animation:none}.btn:hover{transform:none}}
+.btn:disabled{opacity:.6;cursor:wait;transform:none}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.err{color:var(--danger);font-size:14px;font-weight:600;min-height:1.2em;margin:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.done{text-align:center;padding:36px 22px;align-items:center}
+.done .ok{width:64px;height:64px;border-radius:50%;background:color-mix(in srgb,var(--ok) 18%,transparent);border:1px solid var(--ok);display:grid;place-items:center;animation:pop .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.done h2{justify-content:center;font-size:24px}
+.code{font:700 28px/1 var(--display);color:var(--gold);letter-spacing:.06em}
+.done p{margin:0;color:var(--muted);max-width:46ch}
+@media (prefers-reduced-motion:reduce){.card,.done .ok{animation:none}.btn:hover{transform:none}}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="logo" href="./"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i><span id="brand">TankUp</span></a>
+  <a class="logo" href="./"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i><span id="brand">Boost_WM</span></a>
   <a class="back" href="./">← На главную</a>
 </div></header>
 
 <main><div class="wrap">
-  <div class="eyebrow">Оформление заказа</div>
-  <h1>Напиши нам в Telegram</h1>
-  <p class="lead">Заказы принимаем в личных сообщениях. Мы подготовили текст заявки — поправь его под себя и отправь, ответим за пару минут.</p>
+  <div id="form-view">
+    <div class="eyebrow">Новая заявка</div>
+    <h1>Оформление заказа</h1>
+    <p class="lead">Заполни заявку — мы проверим данные, подтвердим цену и напишем тебе, когда начнём работу.</p>
 
-  <div class="grid">
-    <section class="card in" aria-labelledby="msg-label">
-      <label class="label" id="msg-label" for="msg">Текст заявки</label>
-      <textarea id="msg"></textarea>
-      <p class="hint">Укажи сервер (Мир танков или World of Tanks), свой ник и что нужно сделать — так мы быстрее назовём точную цену.</p>
-    </section>
+    <form id="f" novalidate>
+      <section class="card">
+        <h2><span>1</span>Услуга</h2>
+        <div class="fld">
+          <label for="service">Что нужно сделать <i>*</i></label>
+          <select id="service" required></select>
+        </div>
+        <div class="svc-info" id="svc-info"><p id="svc-desc"></p><b id="svc-price"></b></div>
+        <div class="terms" id="terms" hidden>
+          <div class="t-title">Условия</div>
+          <ul id="terms-list"></ul>
+          <label class="check"><input type="checkbox" id="agree"> Мой аккаунт соответствует этим условиям</label>
+        </div>
+      </section>
 
-    <section class="card tg in" aria-label="Telegram">
-      <div class="tg-head">
-        <div class="tg-ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.2 1.8 11.7c-1-.3-1-1 .2-1.5L20.5 3.1c.9-.3 1.6.2 1.4 1.2z"/></svg></div>
-        <div><div class="tg-name" id="tg-name">@username</div><div class="tg-sub">Telegram · отвечаем 24/7</div></div>
+      <section class="card">
+        <h2><span>2</span>Детали заказа</h2>
+        <div id="extra"></div>
+        <div class="fld">
+          <label for="comment">Комментарий</label>
+          <textarea id="comment" maxlength="1500" placeholder="Пожелания по времени игры, технике и т. д."></textarea>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><span>3</span>Аккаунт и связь</h2>
+        <div class="row">
+          <div class="fld">
+            <label for="server">Сервер <i>*</i></label>
+            <select id="server" required>
+              <option value="">Выбери сервер</option>
+              <option>Мир танков (RU)</option>
+              <option>World of Tanks (EU)</option>
+              <option>World of Tanks (NA)</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label for="nick">Ник в игре <i>*</i></label>
+            <input id="nick" required maxlength="60" autocomplete="nickname" placeholder="Например, Tanker_2026">
+          </div>
+        </div>
+        <div class="fld">
+          <label for="contact">Куда тебе написать <i>*</i></label>
+          <input id="contact" required maxlength="120" placeholder="Telegram @ник или Discord">
+          <p class="hint">Данные для входа в аккаунт в заявке не указывай — мы запросим их лично после подтверждения.</p>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="website">Сайт</label><input id="website" tabindex="-1" autocomplete="off"></div>
+      </section>
+
+      <div class="submit">
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn" id="send" type="submit">Отправить заявку</button>
       </div>
-      <ol class="steps">
-        <li>Нажми кнопку ниже — текст заявки скопируется сам</li>
-        <li>Откроется чат с нами в Telegram</li>
-        <li>Вставь текст в поле сообщения и отправь</li>
-      </ol>
-      <a class="btn tgb" id="go" href="#" target="_blank" rel="noopener">Скопировать и открыть Telegram</a>
-      <div class="alt">
-        <button class="btn ghost" id="copy" type="button">Только скопировать текст</button>
-        <a class="btn ghost" id="discord" href="#" target="_blank" rel="noopener" hidden>Написать в Discord</a>
-      </div>
-    </section>
+    </form>
   </div>
+
+  <section class="card done" id="done-view" hidden>
+    <div class="ok" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#5BC08A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2>Заявка отправлена</h2>
+    <div class="code" id="done-code"></div>
+    <p>Сохрани номер заявки. Мы проверим данные и напишем тебе в <b id="done-contact"></b>, как только примем заказ.</p>
+    <a class="btn ghost" href="./">Вернуться на главную</a>
+  </section>
 </div></main>
 
-<div class="toast" id="toast" role="status"></div>
-
+<script src="config.js"></script>
 <script>
 (function(){
-  var q=new URLSearchParams(location.search);
-  var msg=document.getElementById('msg');
-  var t=q.get('t'), s=q.get('s');
-  msg.value = t ? t
-    : s ? 'Здравствуйте! Хочу заказать: '+s+'.\nСервер: \nНик: \nЧто нужно: '
-    : 'Здравствуйте! Хочу заказать буст.\nСервер (Мир танков / WoT): \nНик: \nЧто нужно: ';
+  var cfg = window.WM_CONFIG || {};
+  var q = new URLSearchParams(location.search);
+  var services = [], data = {};
+  var sel = document.getElementById('service'), extra = document.getElementById('extra');
+  var MARKS = [65,85,95];
 
-  function toUrl(u){
-    u=String(u||'').trim();
-    if(/^@\w{3,}$/.test(u))return 'https://t.me/'+u.slice(1);
-    if(/^(t\.me|telegram\.me|discord\.gg|discord\.com)\//i.test(u))return 'https://'+u;
-    if(/^https?:\/\//i.test(u))return u;
-    return '';
-  }
-  function tgHandle(url){var m=/t(?:elegram)?\.me\/([\w]+)/i.exec(url);return m?'@'+m[1]:'Telegram';}
-  function toast(text){var el=document.getElementById('toast');el.textContent=text;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show');},3000);}
-  function copy(){
-    var text=msg.value;
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      return navigator.clipboard.writeText(text).then(function(){toast('Текст скопирован — вставь его в чат');},fallback);
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function kind(name){name=String(name||'');if(/отметк/i.test(name))return 'marks';if(/серебр/i.test(name))return 'silver';if(/опыт/i.test(name))return 'exp';return 'other';}
+  function fld(id,label,input,req,hint){return '<div class="fld"><label for="'+id+'">'+esc(label)+(req?' <i>*</i>':'')+'</label>'+input+(hint?'<p class="hint">'+esc(hint)+'</p>':'')+'</div>';}
+  function num(s){var n=parseFloat(String(s||'').replace(/\s/g,'').replace(',','.'));return isFinite(n)?n:0;}
+  function money(n){return Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ')+' ₽';}
+
+  function renderExtra(){
+    var s = services[sel.value] || {}, k = kind(s.name), h = '';
+    if(k==='marks'){
+      h += fld('tank','Танк','<input id="tank" required maxlength="80" placeholder="Например, Объект 277">',true);
+      h += fld('equip','Оборудование на танке','<textarea id="equip" maxlength="400" placeholder="Например: Турбонаддув, Улучшенная вентиляция, Досылатель"></textarea>',false,'Если оборудования нет или нужно подобрать — так и напиши.');
+      h += '<div class="row">'+
+        fld('cur','Текущий процент отметки','<input id="cur" type="number" min="0" max="94" inputmode="numeric" placeholder="0">',false)+
+        fld('target','Сколько отметок нужно','<select id="target" required><option value="1">1 отметка (65%)</option><option value="2">2 отметки (85%)</option><option value="3" selected>3 отметки (95%)</option></select>',true)+
+      '</div>';
+      if(q.get('price')) h += '<div class="calc-note">По калькулятору: <b>'+esc(q.get('price'))+'</b> · '+esc([q.get('tier')&&q.get('tier')+' уровень',q.get('cls'),q.get('opts')].filter(Boolean).join(', '))+'</div>';
+    } else if(k==='silver'){
+      var opts = String(s.desc||'').split(/\n/).map(function(l){return l.trim();}).filter(function(l){return /—|-/.test(l)&&/\d/.test(l);});
+      h += fld('amount','Сколько серебра','<select id="amount" required>'+opts.map(function(o){return '<option>'+esc(o)+'</option>';}).join('')+'<option value="other">Другое количество</option></select>',true);
+      h += '<div id="amount-other-wrap" hidden>'+fld('amount_other','Сколько серебра нужно','<input id="amount_other" maxlength="40" placeholder="Например, 3 000 000">',true)+'</div>';
+    } else if(k==='exp'){
+      h += fld('amount','Сколько боевого опыта','<input id="amount" type="number" required min="10000" step="10000" value="10000" inputmode="numeric">',true,'');
+      h += fld('tank','На каком танке фармить','<input id="tank" maxlength="80" placeholder="Необязательно">',false);
+    } else {
+      h += fld('task','Что именно нужно','<textarea id="task" required maxlength="800" placeholder="Опиши задачу: текущий результат и что хочешь получить"></textarea>',true);
     }
-    fallback();
-    function fallback(){msg.select();try{document.execCommand('copy');toast('Текст скопирован — вставь его в чат');}catch(e){toast('Выдели текст и скопируй вручную');}}
+    extra.innerHTML = h;
+    // defaults from the calculator
+    if(k==='marks'){
+      if(q.get('cur'))document.getElementById('cur').value=q.get('cur');
+      if(q.get('target'))document.getElementById('target').value=q.get('target');
+    }
+    if(k==='silver'){
+      var a=document.getElementById('amount');
+      a.onchange=function(){document.getElementById('amount-other-wrap').hidden=a.value!=='other';updatePrice();};
+    }
+    if(k==='exp'){document.getElementById('amount').oninput=updatePrice;}
+    // service info + terms
+    document.getElementById('svc-desc').textContent = s.desc || '';
+    var terms = String(s.terms||'').split(/[,;\n]+/).map(function(t){return t.trim().replace(/\.$/,'');}).filter(Boolean);
+    document.getElementById('terms').hidden = !terms.length;
+    document.getElementById('terms-list').innerHTML = terms.map(function(t){return '<li>'+esc(t)+'</li>';}).join('');
+    document.getElementById('agree').checked = false;
+    updatePrice();
   }
-  document.getElementById('copy').onclick=copy;
-  document.getElementById('go').addEventListener('click',function(){copy();});
 
-  function apply(d){
-    var c=d.contacts||{}, h=d.hero||{};
-    var tg=toUrl(h.ctaLink); if(!/t(elegram)?\.me\//i.test(tg)) tg=toUrl(c.telegram)||tg;
-    var go=document.getElementById('go');
-    if(tg){go.href=tg;document.getElementById('tg-name').textContent=tgHandle(tg);}
-    var ds=toUrl(c.discord),db=document.getElementById('discord');
-    if(ds){db.href=ds;db.hidden=false;}
-    if(d.brand){document.getElementById('brand').textContent=d.brand;document.title='Оформление заказа — '+d.brand;}
+  function currentPrice(){
+    var s = services[sel.value] || {}, k = kind(s.name);
+    if(k==='marks' && q.get('price') && q.get('s')===s.name) return q.get('price');
+    if(k==='silver'){var a=document.getElementById('amount');if(a&&a.value!=='other'){var m=/—\s*([\d\s]+)\s*₽/.exec(a.value);if(m)return m[1].trim()+' ₽';}return 'по договорённости';}
+    if(k==='exp'){var e=document.getElementById('amount');var per=num((/(\d[\d\s]*)\s*₽/.exec(s.desc||'')||[])[1])||15;var n=num(e&&e.value);if(n>0)return money(Math.ceil(n/10000)*per);}
+    return s.price || '';
   }
-  fetch('content.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(apply).catch(function(){});
+  function updatePrice(){document.getElementById('svc-price').textContent=currentPrice();}
+
+  function val(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';}
+  function collect(){
+    var s = services[sel.value] || {}, k = kind(s.name), d = {};
+    if(k==='marks'){d['Танк']=val('tank');d['Оборудование']=val('equip');d['Текущий %']=val('cur');d['Нужно отметок']=val('target');
+      if(q.get('s')===s.name){if(q.get('tier'))d['Уровень']=q.get('tier');if(q.get('cls'))d['Класс']=q.get('cls');if(q.get('opts'))d['Опции']=q.get('opts');}}
+    else if(k==='silver'){d['Количество']=val('amount')==='other'?val('amount_other'):val('amount');}
+    else if(k==='exp'){d['Опыт']=val('amount');d['Танк']=val('tank');}
+    else d['Задача']=val('task');
+    Object.keys(d).forEach(function(key){if(!d[key])delete d[key];});
+    return d;
+  }
+  function code(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='';var r=new Uint32Array(5);crypto.getRandomValues(r);for(var i=0;i<5;i++)s+=a[r[i]%a.length];return 'WM-'+s;}
+
+  document.getElementById('f').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var err=document.getElementById('err'), btn=document.getElementById('send');
+    err.textContent='';
+    var form=e.target, bad=[].slice.call(form.querySelectorAll('input,select,textarea')).filter(function(el){return !el.closest('[hidden]')&&!el.checkValidity();});
+    if(val('amount')==='other'&&!val('amount_other'))bad.push(document.getElementById('amount_other'));
+    if(bad.length){err.textContent='Заполни обязательные поля, отмеченные *';bad[0].focus();return;}
+    if(!document.getElementById('terms').hidden&&!document.getElementById('agree').checked){err.textContent='Подтверди, что аккаунт соответствует условиям услуги';document.getElementById('agree').focus();return;}
+    if(val('website'))return; // bot
+    if(!cfg.supabaseUrl||!cfg.supabaseKey){err.textContent='Приём заявок ещё настраивается. Пока напиши нам в Telegram: '+(data.hero&&data.hero.ctaLink||'');return;}
+    var s=services[sel.value], row={code:code(),service:s.name,server:val('server'),nick:val('nick'),contact:val('contact'),details:collect(),comment:val('comment')||null,price:currentPrice()||null};
+    btn.disabled=true;btn.textContent='Отправляю…';
+    try{
+      var r=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/orders',{method:'POST',headers:{'apikey':cfg.supabaseKey,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(row)});
+      if(!r.ok)throw new Error(r.status);
+      document.getElementById('form-view').hidden=true;
+      document.getElementById('done-code').textContent=row.code;
+      document.getElementById('done-contact').textContent=row.contact;
+      document.getElementById('done-view').hidden=false;
+      window.scrollTo(0,0);
+    }catch(x){
+      err.textContent='Не получилось отправить заявку ('+(x.message||'нет сети')+'). Попробуй ещё раз через минуту.';
+    }
+    btn.disabled=false;btn.textContent='Отправить заявку';
+  });
+
+  sel.onchange=renderExtra;
+  fetch('content.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+    data=d;services=d.services||[];
+    if(d.brand){document.getElementById('brand').textContent=d.brand;document.title='Заявка — '+d.brand;}
+    sel.innerHTML=services.map(function(s,i){return '<option value="'+i+'">'+esc(s.name.trim())+'</option>';}).join('');
+    var want=q.get('s'),idx=services.findIndex(function(s){return s.name===want;});
+    if(idx>=0)sel.value=String(idx);
+    renderExtra();
+  }).catch(function(){document.getElementById('err').textContent='Не удалось загрузить список услуг. Обнови страницу.';});
 })();
 </script>
 </body>

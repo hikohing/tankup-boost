@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Заявки — Boost_WM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Manrope:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#0D1015;--surf:#151A22;--surf2:#1C2330;--line:#283142;
+  --text:#E8ECF3;--muted:#8C97AA;--gold:#F0B44C;--gold-ink:#1A1206;--steel:#6F8BB8;--danger:#E0645A;--ok:#5BC08A;--blue:#5AA0F0;
+  --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --body:"Manrope","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:15px/1.55 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh}
+[hidden]{display:none!important}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:64px}
+.logo{font:700 20px/1 var(--display);text-decoration:none;display:flex;align-items:center;gap:10px;margin-right:auto}
+.logo i{display:inline-flex;align-items:flex-end;gap:2px;height:16px}
+.logo i b{width:4px;background:var(--gold);border-radius:1px}
+.logo small{font:600 13px/1 var(--body);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 14px/1 var(--body);padding:11px 16px;border-radius:10px;border:0;cursor:pointer;text-decoration:none;background:var(--gold);color:var(--gold-ink);transition:filter .15s,transform .15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.ok{background:var(--ok);color:#0b1f14}
+.btn.blue{background:var(--blue);color:#07182b}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 50%,var(--line))}
+main{padding-block:28px 80px}
+/* login */
+.login{max-width:400px;margin:8vh auto 0;border:1px solid var(--line);border-radius:16px;background:var(--surf);padding:26px;display:flex;flex-direction:column;gap:14px}
+.login h1{font:700 26px/1.1 var(--display);margin:0}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld label{font-size:13px;font-weight:600;color:var(--muted)}
+input,select,textarea{width:100%;font:15px/1.4 var(--body);color:var(--text);background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+.msg{font-size:14px;color:var(--muted);min-height:1.2em;margin:0}
+.msg.err{color:var(--danger)}
+/* toolbar */
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-right:auto}
+.tab{font:700 13px/1 var(--body);color:var(--muted);background:var(--surf);border:1px solid var(--line);border-radius:999px;padding:9px 13px;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+.tab b{font-variant-numeric:tabular-nums;color:var(--text);font-weight:700}
+.tab[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.tab[aria-pressed="true"] b{color:var(--gold-ink)}
+.search{max-width:240px}
+.updated{font-size:12px;color:var(--muted)}
+/* orders */
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.order{border:1px solid var(--line);border-radius:14px;background:var(--surf);padding:18px;display:flex;flex-direction:column;gap:12px;position:relative;animation:in .35s ease both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.order.is-new{border-color:color-mix(in srgb,var(--gold) 60%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 25%,transparent)}
+.o-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.o-code{font:700 17px/1 var(--display);letter-spacing:.04em}
+.o-date{font-size:12px;color:var(--muted);margin-left:auto}
+.pill{font:700 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1px solid currentColor}
+.st-new{color:var(--gold)}.st-accepted{color:var(--blue)}.st-in_progress{color:#B58CF0}.st-done{color:var(--ok)}.st-rejected{color:var(--danger)}
+.o-svc{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.o-svc h3{font:700 18px/1.2 var(--display);margin:0}
+.o-svc span{font:700 16px/1 var(--display);color:var(--gold);white-space:nowrap}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:14px}
+dt{color:var(--muted)}
+dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
+.o-comment{font-size:14px;background:var(--surf2);border-radius:8px;padding:9px 11px;white-space:pre-line;overflow-wrap:anywhere}
+.o-note textarea{min-height:60px;font-size:14px;resize:vertical}
+.o-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.o-actions select{width:auto;flex:1 1 140px;font-size:13px;padding:9px 10px}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--line);border-radius:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--surf2);border:1px solid var(--gold);border-radius:10px;padding:11px 16px;font-weight:600;font-size:14px;transition:opacity .25s,transform .25s;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:600px){.top .wrap{gap:8px}.logo small{display:none}.search{max-width:none;flex:1 1 100%}.list{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.order{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="./"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i>Boost_WM <small>· заявки</small></a>
+  <a class="btn ghost" href="./#admin" id="to-editor" hidden>Редактор сайта</a>
+  <button class="btn ghost" id="logout" type="button" hidden>Выйти</button>
+</div></header>
+
+<main><div class="wrap">
+  <form class="login" id="login" hidden>
+    <h1>Вход в заявки</h1>
+    <p class="msg" style="margin:0">Почта и пароль админа из Supabase.</p>
+    <div class="fld"><label for="email">Почта</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="fld"><label for="pass">Пароль</label><input id="pass" type="password" autocomplete="current-password" required></div>
+    <p class="msg" id="login-msg" role="alert"></p>
+    <button class="btn" type="submit" id="login-btn">Войти</button>
+  </form>
+
+  <p class="msg err" id="setup" hidden>Приём заявок ещё не подключён: в файле config.js не указаны адрес и ключ Supabase.</p>
+
+  <div id="board" hidden>
+    <div class="bar">
+      <div class="tabs" id="tabs"></div>
+      <input class="search" id="search" type="search" placeholder="Поиск: ник, номер, танк">
+      <button class="btn ghost" id="refresh" type="button">Обновить</button>
+    </div>
+    <p class="updated" id="updated"></p>
+    <div class="list" id="list"></div>
+  </div>
+</div></main>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+  var cfg = window.WM_CONFIG || {}, BASE = String(cfg.supabaseUrl||'').replace(/\/$/,''), KEY = cfg.supabaseKey;
+  var SKEY = 'wm-admin-session';
+  var STATUS = {new:'Новая',accepted:'Принята',in_progress:'В работе',done:'Выполнена',rejected:'Отклонена'};
+  var TABS = [['active','Активные'],['new','Новые'],['accepted','Принятые'],['in_progress','В работе'],['done','Выполненные'],['rejected','Отклонённые'],['all','Все']];
+  var NEXT = {new:[['accepted','Принять','ok'],['rejected','Отклонить','danger']],accepted:[['in_progress','Начать работу','blue']],in_progress:[['done','Выполнено','ok']]};
+  var orders = [], filter = 'active', session = null, timer = null;
+
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function toast(t){var el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show');},2600);}
+  function contactLink(c){c=String(c||'').trim();var m=/^@(\w{3,})$/.exec(c)||/t\.me\/(\w+)/i.exec(c);return m?'<a href="https://t.me/'+esc(m[1])+'" target="_blank" rel="noopener">'+esc(c)+'</a>':esc(c);}
+  function fmt(d){try{return new Date(d).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return d;}}
+
+  function saveSession(s){session=s;try{s?localStorage.setItem(SKEY,JSON.stringify(s)):localStorage.removeItem(SKEY);}catch(e){}}
+  async function auth(body,grant){
+    var r=await fetch(BASE+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{'apikey':KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var j=await r.json().catch(function(){return {};});
+    if(!r.ok)throw j;
+    saveSession({access_token:j.access_token,refresh_token:j.refresh_token,expires_at:Date.now()+(j.expires_in||3600)*1000,email:j.user&&j.user.email});
+  }
+  async function token(){
+    if(!session)throw {status:401};
+    if(Date.now()>session.expires_at-60000){try{await auth({refresh_token:session.refresh_token},'refresh_token');}catch(e){saveSession(null);throw {status:401};}}
+    return session.access_token;
+  }
+  async function api(path,opts){
+    opts=opts||{};
+    var t=await token();
+    opts.headers=Object.assign({'apikey':KEY,'Authorization':'Bearer '+t,'Content-Type':'application/json'},opts.headers||{});
+    var r=await fetch(BASE+'/rest/v1/'+path,opts);
+    if(r.status===401){saveSession(null);throw {status:401};}
+    if(!r.ok)throw {status:r.status};
+    return r.status===204?null:r.json();
+  }
+
+  async function load(quiet){
+    try{
+      var prevNew=orders.filter(function(o){return o.status==='new';}).length;
+      orders=await api('orders?select=*&order=created_at.desc&limit=500');
+      var nowNew=orders.filter(function(o){return o.status==='new';}).length;
+      if(quiet&&nowNew>prevNew)toast('Новая заявка!');
+      document.title=(nowNew?'('+nowNew+') ':'')+'Заявки — Boost_WM';
+      $('updated').textContent='Обновлено в '+new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+' · обновляется само раз в 30 секунд'+(orders.length?'':' · если заявок нет, а они должны быть — проверь, что твоя почта добавлена в таблицу admins');
+      render();
+    }catch(e){if(e.status===401)showLogin('Сессия закончилась — войди снова');else if(!quiet)toast('Не удалось загрузить заявки');}
+  }
+
+  function matches(o){
+    if(filter==='active'&&!(o.status==='new'||o.status==='accepted'||o.status==='in_progress'))return false;
+    if(filter!=='active'&&filter!=='all'&&o.status!==filter)return false;
+    var q=$('search').value.trim().toLowerCase();
+    if(q&&JSON.stringify(o).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }
+  function render(){
+    var counts={all:orders.length,active:0};
+    orders.forEach(function(o){counts[o.status]=(counts[o.status]||0)+1;if(o.status==='new'||o.status==='accepted'||o.status==='in_progress')counts.active++;});
+    $('tabs').innerHTML=TABS.map(function(t){return '<button type="button" class="tab" data-f="'+t[0]+'" aria-pressed="'+(filter===t[0])+'">'+t[1]+' <b>'+(counts[t[0]]||0)+'</b></button>';}).join('');
+    var list=orders.filter(matches);
+    if(!list.length){$('list').innerHTML='<div class="empty">Здесь пока пусто</div>';return;}
+    $('list').innerHTML=list.map(function(o){
+      var det=o.details||{};
+      var rows=[['Сервер',o.server],['Ник',o.nick],['Связь',null,contactLink(o.contact)]].concat(Object.keys(det).map(function(k){return [k,det[k]];}));
+      var acts=(NEXT[o.status]||[]).map(function(a){return '<button type="button" class="btn '+a[2]+'" data-id="'+o.id+'" data-set="'+a[0]+'">'+a[1]+'</button>';}).join('');
+      var selOpts=Object.keys(STATUS).map(function(k){return '<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+STATUS[k]+'</option>';}).join('');
+      return '<article class="order'+(o.status==='new'?' is-new':'')+'">'+
+        '<div class="o-head"><span class="o-code">'+esc(o.code)+'</span><span class="pill st-'+esc(o.status)+'">'+esc(STATUS[o.status]||o.status)+'</span><span class="o-date">'+esc(fmt(o.created_at))+'</span></div>'+
+        '<div class="o-svc"><h3>'+esc(o.service)+'</h3>'+(o.price?'<span>'+esc(o.price)+'</span>':'')+'</div>'+
+        '<dl>'+rows.map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]!=null?r[2]:esc(r[1]||'—'))+'</dd>';}).join('')+'</dl>'+
+        (o.comment?'<div class="o-comment">'+esc(o.comment)+'</div>':'')+
+        '<div class="o-note fld"><label for="note-'+o.id+'">Заметка для себя</label><textarea id="note-'+o.id+'" data-note="'+o.id+'" placeholder="Логин передан, начал в 18:00…">'+esc(o.admin_note||'')+'</textarea></div>'+
+        '<div class="o-actions">'+acts+'<select aria-label="Статус" data-status="'+o.id+'">'+selOpts+'</select></div>'+
+      '</article>';
+    }).join('');
+  }
+
+  async function setStatus(id,st,btn){
+    if(st==='rejected'&&!confirm('Отклонить заявку?'))return render();
+    if(btn)btn.disabled=true;
+    try{await api('orders?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:st}),headers:{'Prefer':'return=minimal'}});
+      orders.forEach(function(o){if(o.id==id)o.status=st;});toast('Статус: '+STATUS[st]);render();
+    }catch(e){if(e.status===401)showLogin('Сессия закончилась — войди снова');else{toast('Не удалось сохранить');if(btn)btn.disabled=false;}}
+  }
+  async function saveNote(id,text){
+    try{await api('orders?id=eq.'+id,{method:'PATCH',body:JSON.stringify({admin_note:text||null}),headers:{'Prefer':'return=minimal'}});
+      orders.forEach(function(o){if(o.id==id)o.admin_note=text;});toast('Заметка сохранена');
+    }catch(e){toast('Заметка не сохранилась');}
+  }
+
+  $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(b){filter=b.dataset.f;render();}});
+  $('search').addEventListener('input',render);
+  $('refresh').onclick=function(){load(false);};
+  $('list').addEventListener('click',function(e){var b=e.target.closest('[data-set]');if(b)setStatus(b.dataset.id,b.dataset.set,b);});
+  $('list').addEventListener('change',function(e){var s=e.target.closest('[data-status]');if(s)setStatus(s.dataset.status,s.value);});
+  $('list').addEventListener('focusout',function(e){var t=e.target.closest('[data-note]');if(!t)return;var o=orders.find(function(x){return x.id==t.dataset.note;});if(o&&(o.admin_note||'')!==t.value)saveNote(t.dataset.note,t.value.trim());});
+
+  function showLogin(msg){
+    clearInterval(timer);
+    $('board').hidden=true;$('logout').hidden=true;$('to-editor').hidden=true;$('login').hidden=false;
+    $('login-msg').textContent=msg||'';$('login-msg').className='msg'+(msg?' err':'');
+  }
+  function showBoard(){
+    $('login').hidden=true;$('board').hidden=false;$('logout').hidden=false;$('to-editor').hidden=false;
+    load(false);clearInterval(timer);timer=setInterval(function(){if(!document.hidden)load(true);},30000);
+  }
+  $('login').addEventListener('submit',async function(e){
+    e.preventDefault();var b=$('login-btn');b.disabled=true;$('login-msg').textContent='Проверяю…';$('login-msg').className='msg';
+    try{await auth({email:$('email').value.trim(),password:$('pass').value},'password');$('pass').value='';showBoard();}
+    catch(x){$('login-msg').textContent=(x&&x.error_code==='invalid_credentials')||(x&&/invalid/i.test(x.msg||x.error_description||''))?'Неверная почта или пароль':'Не удалось войти. Проверь интернет и попробуй ещё раз.';$('login-msg').className='msg err';}
+    b.disabled=false;
+  });
+  $('logout').onclick=function(){if(confirm('Выйти из заявок на этом устройстве?')){saveSession(null);showLogin('');}};
+
+  if(!BASE||!KEY){$('setup').hidden=false;return;}
+  try{session=JSON.parse(localStorage.getItem(SKEY)||'null');}catch(e){}
+  session?showBoard():showLogin('');
+})();
+</script>
+</body>
+</html>
