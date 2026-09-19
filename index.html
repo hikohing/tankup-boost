@@ -338,7 +338,7 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
     }
     if(Array.isArray(val)){
       wrap.className='fld';
-      var l=document.createElement('label');l.textContent=LABELS[key]||key;wrap.appendChild(l);
+      var l=document.createElement('label');l.textContent=(LABELS[key]||key)+(key?' — '+val.length+' шт.':'');wrap.appendChild(l);
       val.forEach(function(item,i){
         var box=document.createElement('div');box.className='item';
         var head=document.createElement('div');head.className='item-head';
@@ -418,7 +418,7 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
     }catch(e){
       var c=e&&e.code;
       if(c===401)setStatus('Токен недействителен или истёк. Нажми «Выйти» и войди с новым токеном.','err');
-      else if(c===403||c===404)setStatus('У токена нет права записи в репозиторий '+REPO.repo+' (нужно Contents: Read and write).','err');
+      else if(c===403||c===404)setStatus('У токена нет права записи. На GitHub открой Settings → Developer settings → Fine-grained tokens → свой токен → Edit: Repository access = tankup-boost, Contents = Read and write. Потом снова нажми «Сохранить» — выходить не нужно, правки не пропадут.','err');
       else if(c===409)setStatus('Файл изменился в другом месте. Обнови страницу и повтори.','err');
       else setStatus('Не удалось сохранить ('+(c||'нет сети')+'). Попробуй ещё раз.','err');
     }
