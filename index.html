@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TankUp Boost</title>
+<meta name="description" content="Буст в Мире танков и World of Tanks: отметки на стволе, прокачка веток, статистика.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Manrope:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#0D1015;--surf:#151A22;--surf2:#1C2330;--line:#283142;
+  --text:#E8ECF3;--muted:#8C97AA;--gold:#F0B44C;--gold-ink:#1A1206;--steel:#6F8BB8;--danger:#E0645A;
+  --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --body:"Manrope","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+img{max-width:100%}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.logo{font:700 22px/1 var(--display);letter-spacing:.02em;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo i{display:inline-flex;align-items:flex-end;gap:2px;height:18px}
+.logo i b{width:4px;background:var(--gold);border-radius:1px}
+.nav{display:flex;gap:22px;margin-left:auto}
+.nav a{text-decoration:none;color:var(--muted);font-weight:600;font-size:14px}
+.nav a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 15px/1 var(--body);padding:14px 22px;border-radius:10px;border:0;cursor:pointer;text-decoration:none;background:var(--gold);color:var(--gold-ink);transition:transform .15s,filter .15s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.sm{padding:10px 16px;font-size:14px}
+@media (max-width:760px){.nav{display:none}.top .btn{margin-left:auto}}
+
+/* hero */
+.hero{padding-block:72px 56px;display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:end}
+.eyebrow{font:600 12px/1.4 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+h1{font:700 clamp(38px,6vw,68px)/1.02 var(--display);margin:14px 0 18px;text-wrap:balance;letter-spacing:-.01em}
+.lead{color:var(--muted);font-size:18px;max-width:52ch;margin:0 0 28px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px}
+.ladder{display:flex;align-items:flex-end;gap:8px;height:260px;padding:20px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--surf),var(--bg))}
+.rung{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;height:100%;min-width:0}
+.rung span{font:600 11px/1.2 var(--body);color:var(--muted);text-align:center;overflow-wrap:anywhere}
+.rung div{background:var(--surf2);border:1px solid var(--line);border-radius:6px 6px 2px 2px;animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+.rung.top div{background:var(--gold);border-color:var(--gold);box-shadow:0 0 28px color-mix(in srgb,var(--gold) 40%,transparent)}
+.rung.top span{color:var(--gold)}
+@keyframes rise{from{transform:scaleY(.2);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+@media (prefers-reduced-motion:reduce){.rung div{animation:none}}
+@media (max-width:860px){.hero{grid-template-columns:1fr;padding-block:44px 36px}.ladder{height:200px}}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border-block:1px solid var(--line)}
+.stat{padding:22px 20px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:700 30px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:14px}
+@media (max-width:600px){.stat{border-right:0;border-bottom:1px solid var(--line)}.stat:last-child{border-bottom:0}}
+
+section{padding-block:72px}
+h2{font:700 clamp(28px,4vw,40px)/1.1 var(--display);margin:0 0 32px;text-wrap:balance}
+
+.services{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.svc{display:flex;flex-direction:column;gap:10px;padding:22px;border:1px solid var(--line);border-radius:14px;background:var(--surf)}
+.svc .game{font:600 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--steel)}
+.svc h3{font:700 21px/1.2 var(--display);margin:0}
+.svc p{margin:0;color:var(--muted);font-size:15px;flex:1}
+.svc .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:14px;border-top:1px dashed var(--line)}
+.price{font:700 22px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.eta{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;counter-reset:s}
+.step{position:relative;padding-top:18px;border-top:2px solid var(--line)}
+.step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font:700 14px/1 var(--display);color:var(--gold);display:block;margin-bottom:10px}
+.step h3{font:700 19px/1.25 var(--display);margin:0 0 6px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+
+.perks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 40px}
+.perk{padding-block:18px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:20px 1fr;gap:14px}
+.perk svg{margin-top:4px;color:var(--gold)}
+.perk h3{font:700 17px/1.3 var(--body);margin:0 0 4px}
+.perk p{margin:0;color:var(--muted);font-size:15px}
+
+.faq{max-width:760px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;padding:18px 36px 18px 0;font-weight:700;font-size:17px;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:4px;top:14px;font:500 24px/1 var(--display);color:var(--gold)}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:0 0 18px;color:var(--muted);max-width:65ch}
+
+.contact{border:1px solid var(--line);border-radius:18px;padding:36px;background:radial-gradient(circle at 100% 0,color-mix(in srgb,var(--gold) 14%,transparent),transparent 55%),var(--surf);display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
+.contact h2{margin-bottom:10px}
+.contact p{color:var(--muted);margin:0}
+.links{display:flex;flex-direction:column;gap:10px}
+@media (max-width:760px){.contact{grid-template-columns:1fr;padding:24px}}
+footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
+
+/* calculator */
+.calc-intro{color:var(--muted);margin:-18px 0 28px;max-width:60ch}
+.calc{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:start}
+.calc-form{display:flex;flex-direction:column;gap:22px;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--surf)}
+.cf-label{display:flex;justify-content:space-between;gap:12px;font:600 12px/1.4 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.cf-label output{color:var(--text);letter-spacing:0;text-transform:none;font:700 15px/1.2 var(--display);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:700 14px/1 var(--body);color:var(--text);background:var(--surf2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.chip small{font-weight:600;opacity:.75}
+.marks-ico{display:inline-flex;gap:2px}
+.marks-ico i{width:4px;height:12px;border-radius:1px;background:currentColor;opacity:.25}
+.marks-ico i.on{opacity:1}
+.range-wrap{position:relative}
+.range-wrap input{width:100%;accent-color:var(--gold);margin:0}
+.range-ticks{position:relative;height:20px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.range-ticks span{position:absolute;top:4px;transform:translateX(-50%);white-space:nowrap}
+.range-ticks span:first-child{transform:none}
+.opt{display:flex;align-items:center;gap:10px;cursor:pointer;padding-block:4px}
+.opt input{accent-color:var(--gold);width:18px;height:18px;margin:0}
+.opt b{margin-left:auto;color:var(--muted);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.result{position:sticky;top:84px;padding:24px;border-radius:14px;border:1px solid var(--gold);background:radial-gradient(circle at 100% 0,color-mix(in srgb,var(--gold) 16%,transparent),transparent 60%),var(--surf);display:flex;flex-direction:column;gap:16px}
+.result .eyebrow{color:var(--muted)}
+.total{font:700 clamp(38px,5vw,52px)/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.breakdown{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.breakdown li{display:flex;justify-content:space-between;gap:12px}
+.breakdown li b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.result .note{font-size:12px;color:var(--muted);margin:0}
+.done{color:var(--text);font-weight:600}
+@media (max-width:860px){.calc{grid-template-columns:1fr}.result{position:static}}
+
+/* admin */
+.admin-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);z-index:40;background:var(--surf);border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.dr-head{display:flex;align-items:center;gap:10px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;border-bottom:1px solid var(--line)}
+.dr-head strong{font:700 18px/1 var(--display);margin-right:auto}
+.dr-body{flex:1;overflow:auto;padding:12px 16px 24px}
+.dr-foot{padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.dr-foot .row{display:flex;gap:10px}
+.dr-foot .row .btn{flex:1}
+.status{font-size:13px;color:var(--muted);min-height:1.2em}
+.status.err{color:var(--danger)}
+.status.ok{color:var(--gold)}
+.grp{border:1px solid var(--line);border-radius:10px;margin-top:10px;background:var(--bg)}
+.grp>summary{cursor:pointer;padding:12px 14px;font-weight:700}
+.grp>.inner{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:12px;color:var(--muted);font-weight:600}
+.fld input,.fld textarea{width:100%;font:15px/1.4 var(--body);color:var(--text);background:var(--surf2);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.fld textarea{min-height:76px;resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--gold)}
+.item{border:1px dashed var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:10px}
+.item-head{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.item-head span{margin-right:auto}
+.ib{background:var(--surf2);color:var(--text);border:1px solid var(--line);border-radius:6px;width:30px;height:28px;cursor:pointer;font-size:14px}
+.ib.del:hover{border-color:var(--danger);color:var(--danger)}
+.add{background:transparent;border:1px dashed var(--gold);color:var(--gold);border-radius:8px;padding:9px;cursor:pointer;font-weight:700}
+.editing .wrap-main{margin-right:min(460px,0px)}
+@media (min-width:1100px){body.editing{padding-right:460px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="application/json" id="site-data">{"meta":{"title":"TankUp Boost"},"brand":"TankUp","hero":{"eyebrow":"Буст · Мир танков · World of Tanks","title":"Отметки, статистика и прокачка — без лишнего гринда","subtitle":"Опытные игроки с «фиолетовой» статистикой выкатают за тебя отметки на стволе, прокачают ветку до X уровня и поднимут WN8. Работаем на серверах Леста (RU) и Wargaming (EU/NA).","cta":"Заказать буст","ctaLink":"https://t.me/your_username","ranks":["Красный","Оранжевый","Жёлтый","Зелёный","Бирюзовый","Фиолетовый"]},"stats":[{"value":"3 отметки","label":"на любой технике X уровня"},{"value":"RU · EU · NA","label":"Мир танков и World of Tanks"},{"value":"24/7","label":"поддержка в чате"}],"servicesTitle":"Услуги и цены","services":[{"game":"Мир танков / WoT","name":"Отметки на стволе","desc":"Набиваем 1, 2 или 3 отметки на нужном танке. Цена зависит от машины и текущего процента.","price":"от 900 ₽","eta":"1–7 дней"},{"game":"Мир танков / WoT","name":"Прокачка ветки","desc":"Исследуем и покупаем технику до нужного уровня, вплоть до X. Можно с фармом серебра на покупку.","price":"от 1 500 ₽","eta":"от 2 дней"},{"game":"Мир танков / WoT","name":"Поднятие статистики","desc":"Играем на результат: растут WN8, процент побед и средний урон. Катаем только на сильной технике.","price":"от 700 ₽","eta":"по объёму"},{"game":"Мир танков / WoT","name":"Ранговые бои и Натиск","desc":"Проходим дивизионы, лиги и получаем сезонные награды в ранговых боях и режиме «Натиск».","price":"от 1 200 ₽","eta":"по сезону"},{"game":"Мир танков / WoT","name":"ЛБЗ и марафоны","desc":"Выполняем личные боевые задачи, этапы марафонов и боевого пропуска с получением наград.","price":"от 500 ₽","eta":"1–5 дней"},{"game":"Мир танков / WoT","name":"Фарм серебра и опыта","desc":"Фармим кредиты, свободный опыт и опыт экипажа на прем-технике.","price":"от 400 ₽","eta":"1–3 дня"}],"calc":{"title":"Калькулятор отметок на стволе","text":"Выбери технику, текущий процент и цель — цена посчитается сразу. Если отметка уже частично набита, платишь только за оставшиеся проценты.","tiers":[{"name":"VI","m1":"300","m2":"500","m3":"1100"},{"name":"VII","m1":"400","m2":"700","m3":"1500"},{"name":"VIII","m1":"600","m2":"1000","m3":"2200"},{"name":"IX","m1":"700","m2":"1200","m3":"2700"},{"name":"X","m1":"900","m2":"1500","m3":"3500"}],"classes":[{"name":"ТТ","k":"1"},{"name":"СТ","k":"1"},{"name":"ПТ-САУ","k":"1.1"},{"name":"ЛТ","k":"1.25"},{"name":"САУ","k":"1.4"}],"options":[{"name":"Срочно — играем без перерывов","pct":"30"},{"name":"Стрим боёв","pct":"10"}],"minPrice":"300","currency":"₽","note":"Цена ориентировочная. Для редкой и акционной техники уточняем стоимость в чате."},"stepsTitle":"Как это работает","steps":[{"title":"Пишешь нам","text":"Указываешь сервер (Мир танков или WoT), ник и задачу — например, 3 отметки на Об. 277. Сразу называем цену и срок."},{"title":"Оплачиваешь","text":"Удобным способом. Крупные заказы вроде прокачки ветки можно оплачивать по этапам."},{"title":"Бустер катает","text":"После каждой сессии — отчёт со скриншотами процента отметки, WN8 и прогресса."},{"title":"Забираешь результат","text":"Возвращаем доступ и советуем сменить пароль. Гарантия на выполненную цель."}],"perksTitle":"Почему нам доверяют","perks":[{"title":"Без запрещённых модов","text":"Только разрешённые моды и честная игра — никаких запрещённых прицелов и читов."},{"title":"Возврат денег","text":"Если не достигли цели по нашей вине — вернём оплату за невыполненную часть."},{"title":"Бережём ресурсы","text":"Не тратим твоё золото, бонды и премиум-снаряды без согласования."},{"title":"Конфиденциальность","text":"Данные аккаунта не передаются третьим лицам и удаляются после заказа."}],"faqTitle":"Частые вопросы","faq":[{"q":"С какими серверами работаете?","a":"Мир танков (Леста, RU) и World of Tanks (Wargaming, EU и NA). Укажи сервер при заказе."},{"q":"Могут ли забанить аккаунт?","a":"Мы играем честно, без запрещённых модов и с VPN твоего региона, поэтому риск минимален."},{"q":"Можно ли следить за процессом?","a":"Да. После каждой сессии присылаем отчёт, а по запросу — стрим боёв."},{"q":"Какие способы оплаты?","a":"Карты, СБП и криптовалюта. Точные реквизиты — в личных сообщениях."}],"contacts":{"title":"Готов к трём отметкам?","text":"Напиши нам — ответим за пару минут и рассчитаем цену под твой аккаунт и технику.","telegram":"https://t.me/your_username","discord":"https://discord.gg/your_invite","email":"boost@example.com"},"footer":"© 2026 TankUp. Сервис не связан с Lesta Games и Wargaming. «Мир танков» и World of Tanks — товарные знаки их владельцев."}</script>
+<script>
+(function(){
+  var ORIGINAL = document.getElementById('site-data').textContent;
+  var data = JSON.parse(ORIGINAL);
+  var app = document.getElementById('app');
+  var canEdit = false, editorOpen = false;
+  var REPO = {owner:'hikohing', repo:'tankup-boost', branch:'main', path:'content.json'};
+  var TOKEN_KEY = 'tankup-gh-token';
+  function getToken(){try{return localStorage.getItem(TOKEN_KEY)||'';}catch(e){return '';}}
+  var DRAFT_KEY = 'tankup-draft';
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function safeUrl(u){u=String(u||'').trim();if(/^(https?:|tg:|mailto:)/i.test(u))return u;if(/^[^\s@]+@[^\s@]+$/.test(u))return 'mailto:'+u;return '#';}
+  var CHECK='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 9.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function render(){
+    var d = data, h = d.hero || {}, c = d.contacts || {};
+    document.title = (d.meta && d.meta.title) || d.brand || '';
+    var ranks = h.ranks || [], n = ranks.length;
+    var ladder = ranks.map(function(r,i){
+      var pct = n>1 ? 18 + (82*(i/(n-1))) : 100;
+      return '<div class="rung'+(i===n-1?' top':'')+'"><div style="height:'+pct.toFixed(0)+'%;animation-delay:'+(i*70)+'ms"></div><span>'+esc(r)+'</span></div>';
+    }).join('');
+    var cta = safeUrl(h.ctaLink);
+    app.innerHTML =
+      '<header class="top"><div class="wrap">'+
+        '<a class="logo" href="#"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i>'+esc(d.brand)+'</a>'+
+        '<nav class="nav"><a href="#services">'+esc(d.servicesTitle)+'</a>'+(d.calc?'<a href="#calc">Калькулятор</a>':'')+'<a href="#steps">'+esc(d.stepsTitle)+'</a><a href="#faq">'+esc(d.faqTitle)+'</a><a href="#contacts">Контакты</a></nav>'+
+        '<a class="btn sm" href="'+esc(cta)+'" target="_blank" rel="noopener">'+esc(h.cta)+'</a>'+
+      '</div></header>'+
+      '<main>'+
+      '<div class="wrap"><div class="hero"><div>'+
+        '<div class="eyebrow">'+esc(h.eyebrow)+'</div>'+
+        '<h1>'+esc(h.title)+'</h1>'+
+        '<p class="lead">'+esc(h.subtitle)+'</p>'+
+        '<div class="hero-actions"><a class="btn" href="'+esc(cta)+'" target="_blank" rel="noopener">'+esc(h.cta)+'</a><a class="btn ghost" href="#services">Смотреть цены</a></div>'+
+      '</div>'+(n?'<div class="ladder" aria-hidden="true">'+ladder+'</div>':'')+'</div>'+
+      ((d.stats||[]).length?'<div class="stats">'+d.stats.map(function(s){return '<div class="stat"><b>'+esc(s.value)+'</b><span>'+esc(s.label)+'</span></div>';}).join('')+'</div>':'')+
+      '</div>'+
+      '<section id="services"><div class="wrap"><h2>'+esc(d.servicesTitle)+'</h2><div class="services">'+
+        (d.services||[]).map(function(s){return '<article class="svc"><div class="game">'+esc(s.game)+'</div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="foot"><div><div class="price">'+esc(s.price)+'</div><span class="eta">'+esc(s.eta)+'</span></div><a class="btn sm" href="'+esc(cta)+'" target="_blank" rel="noopener">Заказать</a></div></article>';}).join('')+
+      '</div></div></section>'+
+      calcHtml(d.calc)+
+      '<section id="steps"><div class="wrap"><h2>'+esc(d.stepsTitle)+'</h2><div class="steps">'+
+        (d.steps||[]).map(function(s){return '<div class="step"><h3>'+esc(s.title)+'</h3><p>'+esc(s.text)+'</p></div>';}).join('')+
+      '</div></div></section>'+
+      '<section><div class="wrap"><h2>'+esc(d.perksTitle)+'</h2><div class="perks">'+
+        (d.perks||[]).map(function(p){return '<div class="perk">'+CHECK+'<div><h3>'+esc(p.title)+'</h3><p>'+esc(p.text)+'</p></div></div>';}).join('')+
+      '</div></div></section>'+
+      '<section id="faq"><div class="wrap"><h2>'+esc(d.faqTitle)+'</h2><div class="faq">'+
+        (d.faq||[]).map(function(f){return '<details><summary>'+esc(f.q)+'</summary><p>'+esc(f.a)+'</p></details>';}).join('')+
+      '</div></div></section>'+
+      '<section id="contacts"><div class="wrap"><div class="contact"><div><h2>'+esc(c.title)+'</h2><p>'+esc(c.text)+'</p></div><div class="links">'+
+        (c.telegram?'<a class="btn" href="'+esc(safeUrl(c.telegram))+'" target="_blank" rel="noopener">Написать в Telegram</a>':'')+
+        (c.discord?'<a class="btn ghost" href="'+esc(safeUrl(c.discord))+'" target="_blank" rel="noopener">Наш Discord</a>':'')+
+        (c.email?'<a class="btn ghost" href="'+esc(safeUrl(c.email))+'">'+esc(c.email)+'</a>':'')+
+      '</div></div></div></section>'+
+      '</main>'+
+      '<footer><div class="wrap">'+esc(d.footer)+(canEdit?'':' · <a href="#admin" id="admin-link" style="color:inherit;opacity:.6">Вход</a>')+'</div></footer>'+
+      (canEdit && !editorOpen ? '<button class="btn admin-fab" id="open-admin" type="button">✎ Админка</button>' : '');
+    var ob = document.getElementById('open-admin');
+    if (ob) ob.onclick = openEditor;
+    var al = document.getElementById('admin-link');
+    if (al) al.onclick = function(e){e.preventDefault();openLogin();};
+    bindCalc();
+  }
+
+  /* ---------- barrel marks calculator ---------- */
+  var MARKS=[65,85,95];
+  var cs={tier:null,cls:0,cur:0,target:3,opts:{}};
+  function num(s){var n=parseFloat(String(s==null?'':s).replace(/\s/g,'').replace(',','.'));return isFinite(n)?n:0;}
+  function money(n,cur){return Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ')+' '+(cur||'₽');}
+  function marksIco(k){var s='<span class="marks-ico" aria-hidden="true">';for(var i=1;i<=3;i++)s+='<i class="'+(i<=k?'on':'')+'"></i>';return s+'</span>';}
+  function clampState(c){
+    var t=c.tiers||[],k=c.classes||[];
+    if(cs.tier==null||cs.tier>=t.length)cs.tier=Math.max(0,t.length-1);
+    if(cs.cls>=k.length)cs.cls=0;
+  }
+  function calcHtml(c){
+    if(!c)return '';
+    clampState(c);
+    var tiers=(c.tiers||[]).map(function(t,i){return '<button type="button" class="chip" data-tier="'+i+'" aria-pressed="'+(i===cs.tier)+'">'+esc(t.name)+'</button>';}).join('');
+    var classes=(c.classes||[]).map(function(t,i){return '<button type="button" class="chip" data-cls="'+i+'" aria-pressed="'+(i===cs.cls)+'">'+esc(t.name)+'</button>';}).join('');
+    var targets=[1,2,3].map(function(k){return '<button type="button" class="chip" data-target="'+k+'" aria-pressed="'+(k===cs.target)+'">'+marksIco(k)+k+' <small>'+MARKS[k-1]+'%</small></button>';}).join('');
+    var opts=(c.options||[]).map(function(o,i){return '<label class="opt"><input type="checkbox" id="calc-opt-'+i+'" data-opt="'+i+'"'+(cs.opts[i]?' checked':'')+'><span>'+esc(o.name)+'</span><b>+'+esc(num(o.pct))+'%</b></label>';}).join('');
+    return '<section id="calc"><div class="wrap"><h2>'+esc(c.title)+'</h2>'+(c.text?'<p class="calc-intro">'+esc(c.text)+'</p>':'')+
+      '<div class="calc"><div class="calc-form">'+
+        '<div><div class="cf-label">Уровень техники</div><div class="chips">'+tiers+'</div></div>'+
+        '<div><div class="cf-label">Класс техники</div><div class="chips">'+classes+'</div></div>'+
+        '<div><div class="cf-label"><span>Текущий процент отметки</span><output id="calc-cur-out">'+cs.cur+'%</output></div>'+
+          '<div class="range-wrap"><input type="range" id="calc-cur" min="0" max="94" step="1" value="'+cs.cur+'" aria-label="Текущий процент отметки">'+
+          '<div class="range-ticks"><span style="left:0">0%</span><span style="left:'+(65/94*100).toFixed(1)+'%">65%</span><span style="left:'+(85/94*100).toFixed(1)+'%">85%</span></div></div></div>'+
+        '<div><div class="cf-label">Цель</div><div class="chips">'+targets+'</div></div>'+
+        (opts?'<div><div class="cf-label">Дополнительно</div>'+opts+'</div>':'')+
+      '</div>'+
+      '<div class="result" aria-live="polite"><div class="eyebrow">Стоимость заказа</div><div class="total" id="calc-total"></div><ul class="breakdown" id="calc-break"></ul>'+
+        '<a class="btn" id="calc-order" target="_blank" rel="noopener" href="'+esc(safeUrl(data.hero&&data.hero.ctaLink))+'">'+esc((data.hero&&data.hero.cta)||'Заказать')+'</a>'+
+        (c.note?'<p class="note">'+esc(c.note)+'</p>':'')+
+      '</div></div></div></section>';
+  }
+  function computeCalc(){
+    var c=data.calc,t=(c.tiers||[])[cs.tier],k=(c.classes||[])[cs.cls];
+    if(!t)return null;
+    var lines=[],base=0,prev=0;
+    for(var i=0;i<cs.target;i++){
+      var lo=prev,hi=MARKS[i];prev=hi;
+      var covered=Math.max(0,hi-Math.max(lo,cs.cur));
+      if(!covered)continue;
+      var part=num(t['m'+(i+1)])*covered/(hi-lo);
+      base+=part;
+      lines.push([(i+1)+'-я отметка ('+Math.max(lo,cs.cur)+'% → '+hi+'%)',part]);
+    }
+    if(!base)return {done:true};
+    var total=base,kk=k?num(k.k)||1:1;
+    if(kk!==1){lines.push(['Класс '+k.name+' ×'+kk,base*(kk-1)]);total=base*kk;}
+    var afterClass=total;
+    (c.options||[]).forEach(function(o,i){if(cs.opts[i]){var add=afterClass*num(o.pct)/100;lines.push([o.name,add]);total+=add;}});
+    total=Math.ceil(total/10)*10;
+    var min=num(c.minPrice);if(total<min){lines.push(['Минимальная сумма заказа',min-total]);total=min;}
+    return {total:total,lines:lines};
+  }
+  function updateCalc(){
+    var tot=document.getElementById('calc-total');if(!tot)return;
+    var r=computeCalc(),br=document.getElementById('calc-break'),cur=data.calc.currency;
+    document.getElementById('calc-cur-out').textContent=cs.cur+'%';
+    var order=document.getElementById('calc-order');
+    if(!r){tot.textContent='—';br.innerHTML='';return;}
+    if(r.done){tot.textContent='—';br.innerHTML='<li class="done">На этом проценте цель уже достигнута — выбери отметку выше.</li>';order.hidden=true;return;}
+    order.hidden=false;
+    tot.textContent=money(r.total,cur);
+    br.innerHTML=r.lines.map(function(l){return '<li><span>'+esc(l[0])+'</span><b>'+(l[1]>=0?'+':'')+money(l[1],cur)+'</b></li>';}).join('');
+  }
+  function bindCalc(){
+    var root=document.getElementById('calc');if(!root)return;
+    root.querySelectorAll('[data-tier],[data-cls],[data-target]').forEach(function(b){
+      b.onclick=function(){
+        var grp=b.hasAttribute('data-tier')?'tier':b.hasAttribute('data-cls')?'cls':'target';
+        cs[grp]=+b.getAttribute('data-'+grp);
+        root.querySelectorAll('[data-'+grp+']').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+        if(grp==='target'&&MARKS[cs.target-1]<=cs.cur){cs.cur=cs.target>1?MARKS[cs.target-2]:0;document.getElementById('calc-cur').value=cs.cur;}
+        updateCalc();
+      };
+    });
+    var rg=document.getElementById('calc-cur');
+    rg.oninput=function(){cs.cur=+rg.value;updateCalc();};
+    root.querySelectorAll('[data-opt]').forEach(function(cb){cb.onchange=function(){cs.opts[cb.getAttribute('data-opt')]=cb.checked;updateCalc();};});
+    updateCalc();
+  }
+
+  /* ---------- editor ---------- */
+  var LABELS={meta:'Вкладка браузера',title:'Заголовок',brand:'Название сайта',hero:'Главный экран',eyebrow:'Надпись над заголовком',subtitle:'Подзаголовок',cta:'Текст кнопки заказа',ctaLink:'Ссылка кнопки заказа',ranks:'Лестница рангов (снизу вверх)',stats:'Цифры под главным экраном',value:'Значение',label:'Подпись',servicesTitle:'Заголовок услуг',services:'Услуги',game:'Игра',name:'Название',desc:'Описание',price:'Цена',eta:'Срок',stepsTitle:'Заголовок шагов',steps:'Шаги',text:'Текст',perksTitle:'Заголовок гарантий',perks:'Гарантии',faqTitle:'Заголовок вопросов',faq:'Вопросы и ответы',q:'Вопрос',a:'Ответ',contacts:'Контакты',telegram:'Telegram (ссылка)',discord:'Discord (ссылка)',email:'Почта',footer:'Текст в подвале'};
+  LABELS.calc='Калькулятор';LABELS.tiers='Уровни техники и цены за каждую отметку';LABELS.m1='Цена 1-й отметки (0→65%)';LABELS.m2='Цена 2-й отметки (65→85%)';LABELS.m3='Цена 3-й отметки (85→95%)';LABELS.classes='Классы техники';LABELS.k='Множитель цены (1 = без наценки, 1.2 = +20%)';LABELS.options='Доп. опции';LABELS.pct='Наценка, %';LABELS.minPrice='Минимальная сумма заказа';LABELS.currency='Валюта';LABELS.note='Примечание под ценой';
+  var LONG={subtitle:1,desc:1,text:1,a:1,footer:1,note:1};
+  var GROUPS=[['Основное',['brand','meta']],['Главный экран',['hero','stats']],['Услуги и цены',['servicesTitle','services']],['Калькулятор отметок',['calc']],['Как это работает',['stepsTitle','steps']],['Гарантии',['perksTitle','perks']],['Вопросы',['faqTitle','faq']],['Контакты и подвал',['contacts','footer']]];
+  var drawer=null, uid=0;
+
+  function getAt(path){var o=data;for(var i=0;i<path.length;i++)o=o[path[i]];return o;}
+  function setAt(path,v){var o=data;for(var i=0;i<path.length-1;i++)o=o[path[i]];o[path[path.length-1]]=v;}
+  function blankLike(x){if(typeof x==='string')return '';if(Array.isArray(x))return [];var o={};for(var k in x)o[k]=blankLike(x[k]);return o;}
+  function changed(){render();stashDraft();setStatus('Есть несохранённые изменения','');}
+
+  function buildField(path,key,val){
+    var wrap=document.createElement('div');
+    if(typeof val==='string'){
+      wrap.className='fld';var id='f'+(++uid);
+      var lab=document.createElement('label');lab.htmlFor=id;lab.textContent=LABELS[key]||key;
+      var inp=document.createElement(LONG[key]||val.length>90?'textarea':'input');inp.id=id;inp.value=val;
+      inp.oninput=function(){setAt(path,inp.value);changed();};
+      wrap.appendChild(lab);wrap.appendChild(inp);return wrap;
+    }
+    if(Array.isArray(val)){
+      wrap.className='fld';
+      var l=document.createElement('label');l.textContent=LABELS[key]||key;wrap.appendChild(l);
+      val.forEach(function(item,i){
+        var box=document.createElement('div');box.className='item';
+        var head=document.createElement('div');head.className='item-head';
+        head.innerHTML='<span>#'+(i+1)+'</span>';
+        [['↑',-1],['↓',1]].forEach(function(b){var bt=document.createElement('button');bt.type='button';bt.className='ib';bt.textContent=b[0];bt.title=b[1]<0?'Выше':'Ниже';bt.disabled=(b[1]<0&&i===0)||(b[1]>0&&i===val.length-1);bt.onclick=function(){var j=i+b[1];var t=val[i];val[i]=val[j];val[j]=t;changed();buildEditor();};head.appendChild(bt);});
+        var del=document.createElement('button');del.type='button';del.className='ib del';del.textContent='✕';del.title='Удалить';del.onclick=function(){if(confirm('Удалить этот пункт?')){val.splice(i,1);changed();buildEditor();}};head.appendChild(del);
+        box.appendChild(head);
+        if(typeof item==='string'){box.appendChild(buildField(path.concat(i),'',item));}
+        else for(var k in item)box.appendChild(buildField(path.concat(i,k),k,item[k]));
+        wrap.appendChild(box);
+      });
+      var add=document.createElement('button');add.type='button';add.className='add';add.textContent='+ Добавить';
+      add.onclick=function(){val.push(val.length?blankLike(val[0]):'');changed();buildEditor();};
+      wrap.appendChild(add);return wrap;
+    }
+    wrap.style.display='contents';
+    for(var k2 in val)wrap.appendChild(buildField(path.concat(k2),k2,val[k2]));
+    return wrap;
+  }
+
+  function buildEditor(){
+    var body=drawer.querySelector('.dr-body');
+    var openSet={};body.querySelectorAll('details.grp').forEach(function(d,i){if(d.open)openSet[i]=1;});
+    var top=body.scrollTop;body.innerHTML='';
+    GROUPS.forEach(function(g,gi){
+      var det=document.createElement('details');det.className='grp';det.open=!!openSet[gi];
+      var s=document.createElement('summary');s.textContent=g[0];det.appendChild(s);
+      var inner=document.createElement('div');inner.className='inner';
+      g[1].forEach(function(k){if(data[k]!==undefined)inner.appendChild(buildField([k],k,data[k]));});
+      det.appendChild(inner);body.appendChild(det);
+    });
+    body.scrollTop=top;
+  }
+
+  function setStatus(t,cls){var s=drawer&&drawer.querySelector('.status');if(s){s.textContent=t;s.className='status '+(cls||'');}}
+
+  function openEditor(){
+    editorOpen=true;document.body.classList.add('editing');
+    drawer=document.createElement('aside');drawer.className='drawer';drawer.setAttribute('aria-label','Редактор сайта');
+    drawer.innerHTML='<div class="dr-head"><strong>Редактор сайта</strong><button type="button" class="ib" id="close-admin" title="Закрыть">✕</button></div><div class="dr-body"></div><div class="dr-foot"><div class="status"></div><div class="row"><button type="button" class="btn ghost sm" id="reset-admin">Отменить правки</button><button type="button" class="btn ghost sm" id="logout-admin" style="flex:0 0 auto">Выйти</button><button type="button" class="btn sm" id="save-admin">Сохранить для всех</button></div></div>';
+    document.body.appendChild(drawer);
+    drawer.querySelector('#close-admin').onclick=closeEditor;
+    drawer.querySelector('#reset-admin').onclick=function(){if(confirm('Вернуть опубликованную версию?')){data=JSON.parse(ORIGINAL);clearDraft();render();buildEditor();setStatus('Правки отменены','');}};
+    drawer.querySelector('#save-admin').onclick=save;
+    drawer.querySelector('#logout-admin').onclick=function(){if(confirm('Выйти из админки на этом устройстве?')){try{localStorage.removeItem(TOKEN_KEY);}catch(e){}canEdit=false;closeEditor();}};
+    buildEditor();render();
+    if(JSON.stringify(data)!==JSON.stringify(JSON.parse(ORIGINAL)))setStatus('Восстановлен несохранённый черновик','');
+    else setStatus('Правки видны сразу. Нажми «Сохранить», чтобы их увидели все.','');
+  }
+  function closeEditor(){editorOpen=false;document.body.classList.remove('editing');if(drawer)drawer.remove();drawer=null;render();}
+
+  function stashDraft(){try{sessionStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}}
+  function clearDraft(){try{sessionStorage.removeItem(DRAFT_KEY);}catch(e){}}
+
+  var API='https://api.github.com/repos/'+REPO.owner+'/'+REPO.repo+'/contents/'+REPO.path;
+  function gh(url,opts,token){
+    opts=opts||{};
+    opts.headers=Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer '+(token||getToken()),'X-GitHub-Api-Version':'2022-11-28'},opts.headers||{});
+    return fetch(url,opts);
+  }
+  function b64(str){var bytes=new TextEncoder().encode(str),bin='';for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);return btoa(bin);}
+
+  async function save(){
+    var btn=drawer.querySelector('#save-admin');
+    btn.disabled=true;setStatus('Сохраняю…','');
+    stashDraft();
+    try{
+      var r=await gh(API+'?ref='+REPO.branch+'&t='+Date.now());
+      if(r.status===401)throw {code:401};
+      var sha=r.ok?(await r.json()).sha:undefined;
+      var body={message:'Правки сайта через админку',content:b64(JSON.stringify(data,null,2)+'\n'),branch:REPO.branch};
+      if(sha)body.sha=sha;
+      var p=await gh(API,{method:'PUT',body:JSON.stringify(body)});
+      if(!p.ok)throw {code:p.status};
+      ORIGINAL=JSON.stringify(data);clearDraft();
+      setStatus('Сохранено! У посетителей сайт обновится через 1–2 минуты.','ok');
+    }catch(e){
+      var c=e&&e.code;
+      if(c===401)setStatus('Токен недействителен или истёк. Нажми «Выйти» и войди с новым токеном.','err');
+      else if(c===403||c===404)setStatus('У токена нет права записи в репозиторий '+REPO.repo+' (нужно Contents: Read and write).','err');
+      else if(c===409)setStatus('Файл изменился в другом месте. Обнови страницу и повтори.','err');
+      else setStatus('Не удалось сохранить ('+(c||'нет сети')+'). Попробуй ещё раз.','err');
+    }
+    btn.disabled=false;
+  }
+
+  function openLogin(){
+    if(canEdit){openEditor();return;}
+    if(document.getElementById('login-box'))return;
+    var box=document.createElement('aside');box.className='drawer';box.id='login-box';box.setAttribute('aria-label','Вход в админку');
+    box.innerHTML='<div class="dr-head"><strong>Вход в админку</strong><button type="button" class="ib" id="close-login" title="Закрыть">✕</button></div>'+
+      '<div class="dr-body"><div class="fld" style="margin-top:12px"><label for="gh-token">GitHub-токен с доступом к репозиторию '+esc(REPO.repo)+'</label><input id="gh-token" type="password" autocomplete="off" placeholder="github_pat_…"></div>'+
+      '<p style="color:var(--muted);font-size:14px">Токен хранится только в этом браузере. Создать его: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--gold)">GitHub → Fine-grained token</a>, в «Repository access» выбери только <b>'+esc(REPO.repo)+'</b>, в «Permissions» — <b>Contents: Read and write</b>.</p></div>'+
+      '<div class="dr-foot"><div class="status"></div><div class="row"><button type="button" class="btn sm" id="do-login">Войти</button></div></div>';
+    document.body.appendChild(box);
+    var st=box.querySelector('.status');
+    box.querySelector('#close-login').onclick=function(){box.remove();};
+    box.querySelector('#do-login').onclick=async function(){
+      var t=box.querySelector('#gh-token').value.trim();
+      if(!t){st.textContent='Вставь токен.';st.className='status err';return;}
+      st.textContent='Проверяю…';st.className='status';
+      try{
+        var r=await gh('https://api.github.com/repos/'+REPO.owner+'/'+REPO.repo,null,t);
+        var j=r.ok?await r.json():null;
+        if(!j||!j.permissions||!j.permissions.push){st.textContent='Этот токен не может менять репозиторий '+REPO.repo+'.';st.className='status err';return;}
+        try{localStorage.setItem(TOKEN_KEY,t);}catch(e){}
+        canEdit=true;box.remove();await loadContent();openEditor();
+      }catch(e){st.textContent='Не удалось проверить токен — нет связи с GitHub.';st.className='status err';}
+    };
+  }
+
+  async function loadContent(){
+    try{
+      var j=null;
+      if(getToken()){
+        var r=await gh(API+'?ref='+REPO.branch+'&t='+Date.now(),{headers:{'Accept':'application/vnd.github.raw+json'}});
+        if(r.ok)j=await r.json();
+      }
+      if(!j){var r2=await fetch('content.json?t='+Date.now(),{cache:'no-store'});if(r2.ok)j=await r2.json();}
+      if(j){ORIGINAL=JSON.stringify(j);if(!editorOpen){data=j;applyDraft();render();}}
+    }catch(e){}
+  }
+  function applyDraft(){
+    if(!canEdit)return;
+    try{var dr=sessionStorage.getItem(DRAFT_KEY);if(dr){var p=JSON.parse(dr);if(JSON.stringify(p)===ORIGINAL)clearDraft();else data=p;}}catch(e){}
+  }
+
+  canEdit=!!getToken();
+  render();
+  loadContent().then(function(){if(location.hash==='#admin')openLogin();});
+})();
+</script>
+</body>
+</html>
