@@ -171,7 +171,8 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
     var r=await fetch(BASE+'/rest/v1/'+path,opts);
     if(r.status===401){saveSession(null);throw {status:401};}
     if(!r.ok)throw {status:r.status};
-    return r.status===204?null:r.json();
+    var txt=await r.text();
+    return txt?JSON.parse(txt):null;
   }
 
   async function load(quiet){
