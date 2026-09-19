@@ -129,8 +129,8 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:var(--
           </div>
         </div>
         <div class="fld">
-          <label for="contact">Куда тебе написать <i>*</i></label>
-          <input id="contact" required maxlength="120" placeholder="Telegram @ник или Discord">
+          <label for="contact">Твой Telegram <i>*</i></label>
+          <input id="contact" required maxlength="120" placeholder="@твой_ник">
           <p class="hint">Данные для входа в аккаунт в заявке не указывай — мы запросим их лично после подтверждения.</p>
         </div>
         <div class="hp" aria-hidden="true"><label for="website">Сайт</label><input id="website" tabindex="-1" autocomplete="off"></div>
@@ -147,7 +147,9 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:var(--
     <div class="ok" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#5BC08A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <h2>Заявка отправлена</h2>
     <div class="code" id="done-code"></div>
-    <p>Сохрани номер заявки. Мы проверим данные и напишем тебе в <b id="done-contact"></b>, как только примем заказ.</p>
+    <p>Мы напишем тебе в Telegram — <b id="done-contact"></b>. Пока ждёшь, можно задать вопрос продавцу прямо в чате заявки.</p>
+    <a class="btn" id="done-chat" href="chat.html">Открыть чат с продавцом</a>
+    <p style="font-size:13px">Чат всегда доступен на этом устройстве в разделе «Мои заявки». Чтобы открыть его на другом, нажми в чате «Ссылка на чат».</p>
     <a class="btn ghost" href="./">Вернуться на главную</a>
   </section>
 </div></main>
@@ -227,6 +229,7 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:var(--
     Object.keys(d).forEach(function(key){if(!d[key])delete d[key];});
     return d;
   }
+  function secret(){var r=new Uint8Array(24);crypto.getRandomValues(r);return Array.prototype.map.call(r,function(b){return ('0'+b.toString(16)).slice(-2);}).join('');}
   function code(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='';var r=new Uint32Array(5);crypto.getRandomValues(r);for(var i=0;i<5;i++)s+=a[r[i]%a.length];return 'WM-'+s;}
 
   document.getElementById('f').addEventListener('submit', async function(e){
@@ -239,7 +242,7 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:var(--
     if(!document.getElementById('terms').hidden&&!document.getElementById('agree').checked){err.textContent='Подтверди, что аккаунт соответствует условиям услуги';document.getElementById('agree').focus();return;}
     if(val('website'))return; // bot
     if(!cfg.supabaseUrl||!cfg.supabaseKey){err.textContent='Приём заявок ещё настраивается. Пока напиши нам в Telegram: '+(data.hero&&data.hero.ctaLink||'');return;}
-    var s=services[sel.value], row={code:code(),service:s.name,server:val('server'),nick:val('nick'),contact:val('contact'),details:collect(),comment:val('comment')||null,price:currentPrice()||null};
+    var s=services[sel.value], row={code:code(),secret:secret(),service:s.name,server:val('server'),nick:val('nick'),contact:val('contact'),details:collect(),comment:val('comment')||null,price:currentPrice()||null};
     btn.disabled=true;btn.textContent='Отправляю…';
     try{
       var r=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/orders',{method:'POST',headers:{'apikey':cfg.supabaseKey,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(row)});
@@ -247,6 +250,9 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:var(--
       document.getElementById('form-view').hidden=true;
       document.getElementById('done-code').textContent=row.code;
       document.getElementById('done-contact').textContent=row.contact;
+      var chatUrl='chat.html#c='+encodeURIComponent(row.code)+'&k='+row.secret;
+      document.getElementById('done-chat').href=chatUrl;
+      try{var l=JSON.parse(localStorage.getItem('wm-my-orders')||'[]');l.unshift({code:row.code,key:row.secret,service:row.service});localStorage.setItem('wm-my-orders',JSON.stringify(l.slice(0,30)));}catch(x){}
       document.getElementById('done-view').hidden=false;
       window.scrollTo(0,0);
     }catch(x){

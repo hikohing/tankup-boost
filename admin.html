@@ -77,6 +77,23 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
 .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--line);border-radius:14px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--surf2);border:1px solid var(--gold);border-radius:10px;padding:11px 16px;font-weight:600;font-size:14px;transition:opacity .25s,transform .25s;z-index:20;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.btn .badge{background:var(--danger);color:#fff;border-radius:999px;font-size:11px;padding:3px 6px;line-height:1}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);z-index:30;background:var(--surf);border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.drawer.open{transform:none}
+.d-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.d-head div{margin-right:auto;min-width:0}
+.d-head b{font:700 17px/1.1 var(--display);display:block}
+.d-head span{font-size:12px;color:var(--muted)}
+.d-feed{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.bubble{max-width:85%;padding:8px 11px 5px;border-radius:13px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.bubble time{display:block;font-size:11px;opacity:.65;text-align:right;margin-top:2px}
+.bubble.admin{align-self:flex-end;background:var(--gold);color:var(--gold-ink);border-bottom-right-radius:4px}
+.bubble.client{align-self:flex-start;background:var(--surf2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.d-empty{margin:auto;color:var(--muted);font-size:14px;text-align:center}
+.d-form{display:flex;gap:8px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.d-form textarea{flex:1;min-height:42px;max-height:140px;resize:none;font-size:14px}
+.ib{background:var(--surf2);color:var(--text);border:1px solid var(--line);border-radius:8px;width:34px;height:32px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
 @media (max-width:600px){.top .wrap{gap:8px}.logo small{display:none}.search{max-width:none;flex:1 1 100%}.list{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.order{animation:none}}
 </style>
@@ -110,6 +127,11 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
     <div class="list" id="list"></div>
   </div>
 </div></main>
+<aside class="drawer" id="drawer" aria-label="Чат с клиентом" aria-hidden="true">
+  <div class="d-head"><div><b id="d-code"></b><span id="d-sub"></span></div><button class="ib" id="d-close" type="button" title="Закрыть">✕</button></div>
+  <div class="d-feed" id="d-feed"></div>
+  <form class="d-form" id="d-form"><textarea id="d-text" rows="1" maxlength="2000" placeholder="Ответ клиенту…" aria-label="Ответ клиенту"></textarea><button class="btn" id="d-send" type="submit">Отправить</button></form>
+</aside>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="config.js"></script>
@@ -121,6 +143,8 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
   var TABS = [['active','Активные'],['new','Новые'],['accepted','Принятые'],['in_progress','В работе'],['done','Выполненные'],['rejected','Отклонённые'],['all','Все']];
   var NEXT = {new:[['accepted','Принять','ok'],['rejected','Отклонить','danger']],accepted:[['in_progress','Начать работу','blue']],in_progress:[['done','Выполнено','ok']]};
   var orders = [], filter = 'active', session = null, timer = null;
+  var unread = {}, chatOrder = null, chatTimer = null, chatSig = '';
+  function totalUnread(){var n=0;for(var k in unread)n+=unread[k];return n;}
 
   function $(id){return document.getElementById(id);}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -152,11 +176,14 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
 
   async function load(quiet){
     try{
-      var prevNew=orders.filter(function(o){return o.status==='new';}).length;
+      var prevNew=orders.filter(function(o){return o.status==='new';}).length, prevUnread=totalUnread();
       orders=await api('orders?select=*&order=created_at.desc&limit=500');
-      var nowNew=orders.filter(function(o){return o.status==='new';}).length;
+      try{var um=await api('messages?select=order_id&author=eq.client&seen=eq.false');unread={};um.forEach(function(m){unread[m.order_id]=(unread[m.order_id]||0)+1;});}catch(x){unread={};}
+      if(chatOrder)delete unread[chatOrder.id];
+      var nowNew=orders.filter(function(o){return o.status==='new';}).length, nowUnread=totalUnread();
       if(quiet&&nowNew>prevNew)toast('Новая заявка!');
-      document.title=(nowNew?'('+nowNew+') ':'')+'Заявки — Boost_WM';
+      else if(quiet&&nowUnread>prevUnread)toast('Новое сообщение от клиента');
+      document.title=(nowNew+nowUnread?'('+(nowNew+nowUnread)+') ':'')+'Заявки — Boost_WM';
       $('updated').textContent='Обновлено в '+new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+' · обновляется само раз в 30 секунд'+(orders.length?'':' · если заявок нет, а они должны быть — проверь, что твоя почта добавлена в таблицу admins');
       render();
     }catch(e){if(e.status===401)showLogin('Сессия закончилась — войди снова');else if(!quiet)toast('Не удалось загрузить заявки');}
@@ -186,7 +213,7 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
         '<dl>'+rows.map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]!=null?r[2]:esc(r[1]||'—'))+'</dd>';}).join('')+'</dl>'+
         (o.comment?'<div class="o-comment">'+esc(o.comment)+'</div>':'')+
         '<div class="o-note fld"><label for="note-'+o.id+'">Заметка для себя</label><textarea id="note-'+o.id+'" data-note="'+o.id+'" placeholder="Логин передан, начал в 18:00…">'+esc(o.admin_note||'')+'</textarea></div>'+
-        '<div class="o-actions">'+acts+'<select aria-label="Статус" data-status="'+o.id+'">'+selOpts+'</select></div>'+
+        '<div class="o-actions">'+(o.secret?'<button type="button" class="btn ghost" data-chat="'+o.id+'">Чат'+(unread[o.id]?' <span class="badge">'+unread[o.id]+'</span>':'')+'</button>':'')+acts+'<select aria-label="Статус" data-status="'+o.id+'">'+selOpts+'</select></div>'+
       '</article>';
     }).join('');
   }
@@ -207,7 +234,53 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
   $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(b){filter=b.dataset.f;render();}});
   $('search').addEventListener('input',render);
   $('refresh').onclick=function(){load(false);};
-  $('list').addEventListener('click',function(e){var b=e.target.closest('[data-set]');if(b)setStatus(b.dataset.id,b.dataset.set,b);});
+  $('list').addEventListener('click',function(e){
+    var b=e.target.closest('[data-set]');if(b)return setStatus(b.dataset.id,b.dataset.set,b);
+    var c=e.target.closest('[data-chat]');if(c)openChat(c.dataset.chat);
+  });
+
+  /* ---------- chat with the client ---------- */
+  function tm(d){try{return new Date(d).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+  async function loadChat(){
+    if(!chatOrder)return;
+    try{
+      var ms=await api('messages?select=id,author,body,created_at,seen&order_id=eq.'+chatOrder.id+'&order=id.asc');
+      var sig=ms.length+':'+(ms.length?ms[ms.length-1].id:0);
+      if(ms.some(function(m){return m.author==='client'&&!m.seen;})){
+        api('messages?order_id=eq.'+chatOrder.id+'&author=eq.client&seen=eq.false',{method:'PATCH',body:JSON.stringify({seen:true}),headers:{'Prefer':'return=minimal'}}).catch(function(){});
+        delete unread[chatOrder.id];render();
+      }
+      if(sig===chatSig)return;
+      var feed=$('d-feed'),atBottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<80||!chatSig;
+      chatSig=sig;
+      feed.innerHTML=ms.length?ms.map(function(m){return '<div class="bubble '+(m.author==='admin'?'admin':'client')+'">'+esc(m.body)+'<time>'+tm(m.created_at)+'</time></div>';}).join('')
+        :'<div class="d-empty">Сообщений пока нет. Напиши клиенту первым — он увидит ответ в чате заявки.</div>';
+      if(atBottom)feed.scrollTop=feed.scrollHeight;
+    }catch(e){if(e.status===401)showLogin('Сессия закончилась — войди снова');}
+  }
+  function openChat(id){
+    chatOrder=orders.find(function(o){return o.id==id;});if(!chatOrder)return;
+    chatSig='';$('d-feed').innerHTML='<div class="d-empty">Загружаю…</div>';
+    $('d-code').textContent='Чат · '+chatOrder.code;
+    $('d-sub').textContent=[chatOrder.nick,chatOrder.service].filter(Boolean).join(' · ');
+    $('drawer').classList.add('open');$('drawer').setAttribute('aria-hidden','false');
+    loadChat();clearInterval(chatTimer);chatTimer=setInterval(function(){if(!document.hidden)loadChat();},4000);
+    setTimeout(function(){$('d-text').focus();},300);
+  }
+  function closeChat(){chatOrder=null;clearInterval(chatTimer);$('drawer').classList.remove('open');$('drawer').setAttribute('aria-hidden','true');}
+  $('d-close').onclick=closeChat;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&chatOrder)closeChat();});
+  var dt=$('d-text');
+  dt.addEventListener('input',function(){dt.style.height='auto';dt.style.height=Math.min(dt.scrollHeight,140)+'px';});
+  dt.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('d-form').requestSubmit();}});
+  $('d-form').addEventListener('submit',async function(e){
+    e.preventDefault();var body=dt.value.trim();if(!body||!chatOrder)return;
+    $('d-send').disabled=true;
+    try{await api('messages',{method:'POST',body:JSON.stringify({order_id:chatOrder.id,author:'admin',body:body}),headers:{'Prefer':'return=minimal'}});
+      dt.value='';dt.style.height='auto';await loadChat();
+    }catch(x){toast(x.status===401?'Сессия закончилась — войди снова':'Сообщение не отправилось');}
+    $('d-send').disabled=false;dt.focus();
+  });
   $('list').addEventListener('change',function(e){var s=e.target.closest('[data-status]');if(s)setStatus(s.dataset.status,s.value);});
   $('list').addEventListener('focusout',function(e){var t=e.target.closest('[data-note]');if(!t)return;var o=orders.find(function(x){return x.id==t.dataset.note;});if(o&&(o.admin_note||'')!==t.value)saveNote(t.dataset.note,t.value.trim());});
 

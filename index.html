@@ -241,7 +241,7 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
       return '<div class="rung'+(i===n-1?' top':'')+'"><div style="height:'+pct.toFixed(0)+'%;animation-delay:'+(i*70)+'ms"></div><span>'+esc(r)+'</span></div>';
     }).join('');
     var cta = 'order.html';
-    var links = '<a href="#services">'+esc(d.servicesTitle)+'</a>'+(d.calc?'<a href="#calc">Калькулятор</a>':'')+'<a href="#steps">'+esc(d.stepsTitle)+'</a><a href="#faq">'+esc(d.faqTitle)+'</a><a href="#contacts">Контакты</a>';
+    var links = '<a href="#services">'+esc(d.servicesTitle)+'</a>'+(d.calc?'<a href="#calc">Калькулятор</a>':'')+'<a href="#steps">'+esc(d.stepsTitle)+'</a><a href="#faq">'+esc(d.faqTitle)+'</a><a href="#contacts">Контакты</a>'+(function(){try{return JSON.parse(localStorage.getItem('wm-my-orders')||'[]').length?'<a href="chat.html">Мои заявки</a>':'';}catch(e){return '';}})();
     app.innerHTML =
       '<header class="top" id="top"><div class="wrap">'+
         '<a class="logo" href="#"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i>'+esc(d.brand)+'</a>'+

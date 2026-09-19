@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Чат по заявке — Boost_WM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Manrope:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#0D1015;--surf:#151A22;--surf2:#1C2330;--line:#283142;
+  --text:#E8ECF3;--muted:#8C97AA;--gold:#F0B44C;--gold-ink:#1A1206;--danger:#E0645A;--ok:#5BC08A;--blue:#5AA0F0;
+  --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --body:"Manrope","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text)}
+body{font:15px/1.5 var(--body);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+[hidden]{display:none!important}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.top{border-bottom:1px solid var(--line);flex:none;padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:60px}
+.wrap{max-width:760px;width:100%;margin:0 auto;padding-inline:16px}
+.logo{font:700 20px/1 var(--display);text-decoration:none;display:flex;align-items:center;gap:10px;margin-right:auto}
+.logo i{display:inline-flex;align-items:flex-end;gap:2px;height:16px}
+.logo i b{width:4px;background:var(--gold);border-radius:1px}
+.link{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+.link:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 14px/1 var(--body);padding:11px 16px;border-radius:10px;border:0;cursor:pointer;text-decoration:none;background:var(--gold);color:var(--gold-ink);transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+/* chat layout */
+.chat{flex:1;display:flex;flex-direction:column;min-height:0}
+.head{flex:none;border-bottom:1px solid var(--line);background:var(--surf)}
+.head .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:12px}
+.h-main{margin-right:auto;min-width:0}
+.h-code{font:700 18px/1.1 var(--display);letter-spacing:.04em}
+.h-svc{font-size:13px;color:var(--muted)}
+.pill{font:700 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.st-new{color:var(--gold)}.st-accepted{color:var(--blue)}.st-in_progress{color:#B58CF0}.st-done{color:var(--ok)}.st-rejected{color:var(--danger)}
+.feed{flex:1;overflow-y:auto;overscroll-behavior:contain}
+.feed .wrap{display:flex;flex-direction:column;gap:8px;padding-block:18px}
+.sys{align-self:center;text-align:center;font-size:13px;color:var(--muted);background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:520px}
+.msg{max-width:80%;padding:9px 12px 6px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere;animation:pop .25s ease both}
+.msg time{display:block;font-size:11px;opacity:.65;text-align:right;margin-top:2px}
+.msg.me{align-self:flex-end;background:var(--gold);color:var(--gold-ink);border-bottom-right-radius:4px}
+.msg.them{align-self:flex-start;background:var(--surf2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.them .who{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:2px}
+.msg.pending{opacity:.6}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.composer{flex:none;border-top:1px solid var(--line);background:var(--surf);padding-bottom:env(safe-area-inset-bottom,0px)}
+.composer .wrap{display:flex;gap:10px;align-items:flex-end;padding-block:12px}
+.composer textarea{flex:1;min-height:44px;max-height:160px;resize:none;font:15px/1.4 var(--body);color:var(--text);background:var(--surf2);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.composer textarea:focus{outline:none;border-color:var(--gold)}
+.composer .btn{height:44px}
+.note{font-size:12px;color:var(--muted);padding-bottom:8px}
+/* my orders */
+.center{flex:1;overflow-y:auto}
+.center .wrap{padding-block:36px 60px;display:flex;flex-direction:column;gap:14px}
+h1{font:700 30px/1.1 var(--display);margin:0}
+.muted{color:var(--muted);margin:0}
+.olist{display:flex;flex-direction:column;gap:10px}
+.oitem{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surf);text-decoration:none;transition:border-color .2s}
+.oitem:hover{border-color:var(--gold)}
+.oitem b{font:700 16px/1 var(--display);letter-spacing:.04em}
+.oitem span{color:var(--muted);font-size:14px;margin-right:auto}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--surf2);border:1px solid var(--gold);border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;transition:opacity .25s,transform .25s;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.msg{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="./"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i>Boost_WM</a>
+  <a class="link" href="chat.html" id="my-link">Мои заявки</a>
+</div></header>
+
+<div class="center" id="list-view" hidden><div class="wrap">
+  <h1>Мои заявки</h1>
+  <p class="muted" id="list-hint">Заявки, отправленные с этого устройства. Нажми на заявку, чтобы открыть чат с продавцом.</p>
+  <div class="olist" id="olist"></div>
+  <a class="btn" href="order.html" style="align-self:flex-start">Новая заявка</a>
+</div></div>
+
+<div class="chat" id="chat-view" hidden>
+  <div class="head"><div class="wrap">
+    <div class="h-main"><div class="h-code" id="h-code"></div><div class="h-svc" id="h-svc"></div></div>
+    <span class="pill" id="h-status"></span>
+    <button class="btn ghost" id="copy-link" type="button">Ссылка на чат</button>
+  </div></div>
+  <div class="feed" id="feed"><div class="wrap" id="msgs"></div></div>
+  <form class="composer" id="composer"><div class="wrap">
+    <textarea id="text" rows="1" maxlength="2000" placeholder="Сообщение продавцу…" aria-label="Сообщение"></textarea>
+    <button class="btn" id="send" type="submit">Отправить</button>
+  </div><div class="wrap note">Enter — отправить, Shift+Enter — новая строка. Пароль от аккаунта сюда не пиши, пока продавец не примет заказ.</div></form>
+</div>
+
+<div class="center" id="err-view" hidden><div class="wrap">
+  <h1>Чат не найден</h1>
+  <p class="muted" id="err-text">Проверь ссылку на чат — она выдаётся после отправки заявки.</p>
+  <a class="btn ghost" href="chat.html" style="align-self:flex-start">Мои заявки</a>
+</div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+  var cfg=window.WM_CONFIG||{}, BASE=String(cfg.supabaseUrl||'').replace(/\/$/,''), KEY=cfg.supabaseKey;
+  var STATUS={new:'Новая',accepted:'Принята',in_progress:'В работе',done:'Выполнена',rejected:'Отклонена'};
+  var SYS={new:'Заявка отправлена. Продавец проверит её и ответит здесь.',accepted:'Продавец принял заявку.',in_progress:'Работа над заказом началась.',done:'Заказ выполнен. Спасибо, что выбрали нас!',rejected:'Заявка отклонена. Подробности — в сообщениях выше.'};
+  var MY='wm-my-orders';
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function toast(t){var el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show');},2600);}
+  function tm(d){try{var x=new Date(d),n=new Date();return x.toDateString()===n.toDateString()?x.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):x.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+  function mine(){try{return JSON.parse(localStorage.getItem(MY)||'[]');}catch(e){return [];}}
+  function remember(o){try{var l=mine().filter(function(x){return x.code!==o.code;});l.unshift(o);localStorage.setItem(MY,JSON.stringify(l.slice(0,30)));}catch(e){}}
+  async function rpc(fn,args){
+    var r=await fetch(BASE+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':KEY,'Content-Type':'application/json'},body:JSON.stringify(args)});
+    var t=await r.text();if(!r.ok){var j={};try{j=JSON.parse(t);}catch(e){}throw {status:r.status,message:j.message||t};}
+    return t?JSON.parse(t):null;
+  }
+
+  window.addEventListener('hashchange',function(){location.reload();});
+  var h=new URLSearchParams(location.hash.slice(1)), code=h.get('c'), key=h.get('k');
+  if(!code||!key){ // list view
+    var l=mine();$('list-view').hidden=false;$('my-link').hidden=true;
+    if(!l.length){$('list-hint').textContent='С этого устройства заявок ещё не было. Ссылку на чат ты получаешь сразу после отправки заявки.';}
+    $('olist').innerHTML=l.map(function(o){return '<a class="oitem" href="chat.html#c='+encodeURIComponent(o.code)+'&k='+encodeURIComponent(o.key)+'"><b>'+esc(o.code)+'</b><span>'+esc(o.service||'')+'</span>→</a>';}).join('');
+    return;
+  }
+
+  var lastSig='', timer=null, sending=false;
+  function render(d){
+    $('h-code').textContent=d.code;$('h-svc').textContent=[d.service,d.price].filter(Boolean).join(' · ');
+    var st=$('h-status');st.textContent=STATUS[d.status]||d.status;st.className='pill st-'+d.status;
+    document.title='Чат '+d.code+' — Boost_WM';
+    var sig=d.status+':'+d.messages.length+':'+(d.messages.length?d.messages[d.messages.length-1].id:0);
+    if(sig===lastSig)return;
+    var feed=$('feed'),atBottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<80,hadMsgs=lastSig!=='';
+    var newFromSeller=hadMsgs&&d.messages.length&&d.messages[d.messages.length-1].author==='admin'&&lastSig.split(':')[1]!=String(d.messages.length);
+    lastSig=sig;
+    var html='<div class="sys">'+esc(SYS.new)+'</div>';
+    html+=d.messages.map(function(m){return m.author==='client'
+      ?'<div class="msg me">'+esc(m.body)+'<time>'+tm(m.at)+'</time></div>'
+      :'<div class="msg them"><div class="who">Продавец</div>'+esc(m.body)+'<time>'+tm(m.at)+'</time></div>';}).join('');
+    if(d.status!=='new')html+='<div class="sys">'+esc(SYS[d.status]||'')+'</div>';
+    $('msgs').innerHTML=html;
+    if(atBottom||!hadMsgs)feed.scrollTop=feed.scrollHeight;
+    if(newFromSeller){toast('Новое сообщение от продавца');}
+    var closed=d.status==='done'||d.status==='rejected';
+    $('text').disabled=false;$('text').placeholder=closed?'Заказ закрыт, но написать всё ещё можно…':'Сообщение продавцу…';
+  }
+  async function load(){
+    try{var d=await rpc('chat_get',{p_code:code,p_key:key});
+      if(!d){$('chat-view').hidden=true;$('err-view').hidden=false;clearInterval(timer);return;}
+      $('chat-view').hidden=false;$('err-view').hidden=true;remember({code:d.code,key:key,service:d.service});render(d);
+    }catch(e){if(!lastSig){$('err-view').hidden=false;$('err-text').textContent='Не удалось загрузить чат. Проверь интернет и обнови страницу.';}}
+  }
+
+  var ta=$('text');
+  ta.addEventListener('input',function(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,160)+'px';});
+  ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('composer').requestSubmit();}});
+  $('composer').addEventListener('submit',async function(e){
+    e.preventDefault();var body=ta.value.trim();if(!body||sending)return;
+    sending=true;$('send').disabled=true;
+    var tmp=document.createElement('div');tmp.className='msg me pending';tmp.textContent=body;$('msgs').appendChild(tmp);$('feed').scrollTop=$('feed').scrollHeight;
+    ta.value='';ta.style.height='auto';
+    try{await rpc('chat_send',{p_code:code,p_key:key,p_body:body});await load();}
+    catch(x){tmp.remove();ta.value=body;toast(/too many/.test(x.message||'')?'Слишком много сообщений подряд — подожди минуту':'Сообщение не отправилось, попробуй ещё раз');}
+    sending=false;$('send').disabled=false;ta.focus();
+  });
+  $('copy-link').onclick=function(){var u=location.href;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){toast('Ссылка скопирована — по ней чат откроется с любого устройства');},function(){prompt('Скопируй ссылку на чат:',u);});};
+
+  load();
+  timer=setInterval(function(){if(!document.hidden)load();},5000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)load();});
+})();
+</script>
+</body>
+</html>
