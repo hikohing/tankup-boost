@@ -39,6 +39,55 @@ a{color:inherit}
 .btn.sm{padding:10px 16px;font-size:14px}
 @media (max-width:760px){.nav{display:none}.top .btn{margin-left:auto}}
 
+/* comfort & motion */
+html{scroll-behavior:smooth}
+.top{transition:box-shadow .25s,background .25s}
+.top.scrolled{box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.nav a{position:relative;transition:color .2s}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;border-radius:2px;background:var(--gold);transform:scaleX(0);transition:transform .25s ease}
+.nav a:hover::after,.nav a.active::after{transform:scaleX(1)}
+.nav a.active{color:var(--text)}
+.burger{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surf);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0}
+.burger span{display:block;width:18px;height:2px;border-radius:2px;background:var(--text);transition:transform .25s,opacity .2s}
+.menu-open .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-open .burger span:nth-child(2){opacity:0}
+.menu-open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mnav{display:none}
+@media (max-width:760px){
+  .top .wrap{gap:10px}
+  .burger{display:inline-flex}
+  .mnav{display:flex;flex-direction:column;overflow:hidden;max-height:0;transition:max-height .3s ease}
+  .menu-open .mnav{max-height:400px;border-top:1px solid var(--line)}
+  .mnav a{display:block;padding:14px 20px;text-decoration:none;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line)}
+  .mnav a.active{color:var(--gold)}
+}
+.svc{transition:transform .25s ease,border-color .25s,box-shadow .25s}
+.svc:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--gold) 45%,var(--line));box-shadow:0 14px 34px rgba(0,0,0,.35)}
+.foot-btns{display:flex;gap:8px;flex-wrap:wrap}
+.chip{transition:background .2s,border-color .2s,color .2s,transform .15s}
+.chip:active{transform:scale(.96)}
+.faq details p{animation:none}
+.faq details[open] p{animation:fadeDown .3s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.hero>div:first-child>*{animation:heroIn .7s cubic-bezier(.2,.8,.2,1) both}
+.hero>div:first-child>*:nth-child(2){animation-delay:.08s}
+.hero>div:first-child>*:nth-child(3){animation-delay:.16s}
+.hero>div:first-child>*:nth-child(4){animation-delay:.24s}
+@keyframes heroIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease var(--d,0ms),transform .6s cubic-bezier(.2,.8,.2,1) var(--d,0ms)}
+.reveal.in{opacity:1;transform:none}
+.total.bump{animation:bump .35s ease}
+@keyframes bump{40%{transform:scale(1.04)}}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:50;background:var(--surf2);color:var(--text);border:1px solid var(--gold);border-radius:10px;padding:12px 18px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);text-align:center;transition:opacity .25s,transform .25s;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+body.editing .rung div,body.editing .hero>div:first-child>*{animation:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero>div:first-child>*,.total.bump,.faq details[open] p{animation:none}
+  .svc,.svc:hover{transition:none;transform:none}
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
 /* hero */
 .hero{padding-block:72px 56px;display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:end}
 .eyebrow{font:600 12px/1.4 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
@@ -165,7 +214,7 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
 </head>
 <body>
 <div id="app"></div>
-<script type="application/json" id="site-data">{"meta":{"title":"TankUp Boost"},"brand":"TankUp","hero":{"eyebrow":"Буст · Мир танков · World of Tanks","title":"Отметки, статистика и прокачка — без лишнего гринда","subtitle":"Опытные игроки с «фиолетовой» статистикой выкатают за тебя отметки на стволе, прокачают ветку до X уровня и поднимут WN8. Работаем на серверах Леста (RU) и Wargaming (EU/NA).","cta":"Заказать буст","ctaLink":"https://t.me/your_username","ranks":["Красный","Оранжевый","Жёлтый","Зелёный","Бирюзовый","Фиолетовый"]},"stats":[{"value":"3 отметки","label":"на любой технике X уровня"},{"value":"RU · EU · NA","label":"Мир танков и World of Tanks"},{"value":"24/7","label":"поддержка в чате"}],"servicesTitle":"Услуги и цены","services":[{"game":"Мир танков / WoT","name":"Отметки на стволе","desc":"Набиваем 1, 2 или 3 отметки на нужном танке. Цена зависит от машины и текущего процента.","price":"от 900 ₽","eta":"1–7 дней"},{"game":"Мир танков / WoT","name":"Прокачка ветки","desc":"Исследуем и покупаем технику до нужного уровня, вплоть до X. Можно с фармом серебра на покупку.","price":"от 1 500 ₽","eta":"от 2 дней"},{"game":"Мир танков / WoT","name":"Поднятие статистики","desc":"Играем на результат: растут WN8, процент побед и средний урон. Катаем только на сильной технике.","price":"от 700 ₽","eta":"по объёму"},{"game":"Мир танков / WoT","name":"Ранговые бои и Натиск","desc":"Проходим дивизионы, лиги и получаем сезонные награды в ранговых боях и режиме «Натиск».","price":"от 1 200 ₽","eta":"по сезону"},{"game":"Мир танков / WoT","name":"ЛБЗ и марафоны","desc":"Выполняем личные боевые задачи, этапы марафонов и боевого пропуска с получением наград.","price":"от 500 ₽","eta":"1–5 дней"},{"game":"Мир танков / WoT","name":"Фарм серебра и опыта","desc":"Фармим кредиты, свободный опыт и опыт экипажа на прем-технике.","price":"от 400 ₽","eta":"1–3 дня"}],"calc":{"title":"Калькулятор отметок на стволе","text":"Выбери технику, текущий процент и цель — цена посчитается сразу. Если отметка уже частично набита, платишь только за оставшиеся проценты.","tiers":[{"name":"VI","m1":"300","m2":"500","m3":"1100"},{"name":"VII","m1":"400","m2":"700","m3":"1500"},{"name":"VIII","m1":"600","m2":"1000","m3":"2200"},{"name":"IX","m1":"700","m2":"1200","m3":"2700"},{"name":"X","m1":"900","m2":"1500","m3":"3500"}],"classes":[{"name":"ТТ","k":"1"},{"name":"СТ","k":"1"},{"name":"ПТ-САУ","k":"1.1"},{"name":"ЛТ","k":"1.25"},{"name":"САУ","k":"1.4"}],"options":[{"name":"Срочно — играем без перерывов","pct":"30"},{"name":"Стрим боёв","pct":"10"}],"minPrice":"300","currency":"₽","note":"Цена ориентировочная. Для редкой и акционной техники уточняем стоимость в чате."},"stepsTitle":"Как это работает","steps":[{"title":"Пишешь нам","text":"Указываешь сервер (Мир танков или WoT), ник и задачу — например, 3 отметки на Об. 277. Сразу называем цену и срок."},{"title":"Оплачиваешь","text":"Удобным способом. Крупные заказы вроде прокачки ветки можно оплачивать по этапам."},{"title":"Бустер катает","text":"После каждой сессии — отчёт со скриншотами процента отметки, WN8 и прогресса."},{"title":"Забираешь результат","text":"Возвращаем доступ и советуем сменить пароль. Гарантия на выполненную цель."}],"perksTitle":"Почему нам доверяют","perks":[{"title":"Без запрещённых модов","text":"Только разрешённые моды и честная игра — никаких запрещённых прицелов и читов."},{"title":"Возврат денег","text":"Если не достигли цели по нашей вине — вернём оплату за невыполненную часть."},{"title":"Бережём ресурсы","text":"Не тратим твоё золото, бонды и премиум-снаряды без согласования."},{"title":"Конфиденциальность","text":"Данные аккаунта не передаются третьим лицам и удаляются после заказа."}],"faqTitle":"Частые вопросы","faq":[{"q":"С какими серверами работаете?","a":"Мир танков (Леста, RU) и World of Tanks (Wargaming, EU и NA). Укажи сервер при заказе."},{"q":"Могут ли забанить аккаунт?","a":"Мы играем честно, без запрещённых модов и с VPN твоего региона, поэтому риск минимален."},{"q":"Можно ли следить за процессом?","a":"Да. После каждой сессии присылаем отчёт, а по запросу — стрим боёв."},{"q":"Какие способы оплаты?","a":"Карты, СБП и криптовалюта. Точные реквизиты — в личных сообщениях."}],"contacts":{"title":"Готов к трём отметкам?","text":"Напиши нам — ответим за пару минут и рассчитаем цену под твой аккаунт и технику.","telegram":"https://t.me/your_username","discord":"https://discord.gg/your_invite","email":"boost@example.com"},"footer":"© 2026 TankUp. Сервис не связан с Lesta Games и Wargaming. «Мир танков» и World of Tanks — товарные знаки их владельцев."}</script>
+<script type="application/json" id="site-data">{"meta":{"title":"TankUp Boost"},"brand":"TankUp","hero":{"eyebrow":"Буст · Мир танков · World of Tanks","title":"Отметки, статистика и прокачка","subtitle":"Опытные игроки с «фиолетовой» статистикой сделают за тебя отметки на стволе, прокачают ветку до X уровня и поднимут WN8. Работаем на серверах Лесты(RU) и Wargaming (EU/NA).","cta":"Заказать буст","ctaLink":"@Valentin_boost","ranks":["Красный","Оранжевый","Жёлтый","Зелёный","Бирюзовый","Фиолетовый"]},"stats":[{"value":"3 отметки","label":"на любой технике X уровня"},{"value":"RU · EU · NA","label":"Мир танков и World of Tanks"},{"value":"24/7","label":"поддержка в чате"}],"servicesTitle":"Услуги и цены","services":[{"game":"Мир танков / WoT","name":"Отметки на стволе","desc":"Возьмем вам 1, 2 или 3 отметки на нужном танке. Цена зависит от машины и текущего процента.","price":"от 100 ₽","eta":"Несколько Дней"},{"game":"Мир танков / WoT","name":"Прокачка ветки","desc":"Прокачиваем технику до нужного уровня, вплоть до X уровня.","price":"от 200 ₽","eta":"от 2 дней"},{"game":"Мир танков / WoT","name":"Поднятие статистики","desc":"Играем на результат: растут WN8, процент побед и средний урон. Катаем только на сильной технике.","price":"от 100 ₽","eta":"Зависит от заказа"},{"game":"Мир танков / WoT","name":"Натиск","desc":"Проходим дивизионы, возьмем вам любой ранг в Натиске.","price":"от 1 200 ₽","eta":"по сезону"},{"game":"Мир танков / WoT","name":"ЛБЗ ","desc":"Выполняем личные боевые задачи любого типа","price":"от 100 ₽","eta":"1–5 дней"},{"game":"Мир танков / WoT","name":"Фарм серебра и опыта","desc":"Фармим кредиты, свободный и боевой  опыт.","price":"от 100 ₽","eta":"1–3 дня"}],"calc":{"title":"Калькулятор отметок на стволе","text":"Выбери технику, текущий процент и цель — цена посчитается сразу. Если отметка уже частично набита, платишь только за оставшиеся проценты.","tiers":[{"name":"VI","m1":"500","m2":"600","m3":"800"},{"name":"VII","m1":"500","m2":"600","m3":"900"},{"name":"VIII","m1":"700","m2":"800","m3":"1300"},{"name":"IX","m1":"1800","m2":"1000","m3":"2200"},{"name":"X","m1":"2300","m2":"1500","m3":"3000"}],"classes":[{"name":"ТТ","k":"1"},{"name":"СТ","k":"1"},{"name":"ПТ-САУ","k":"1.1"},{"name":"ЛТ","k":"1.25"},{"name":"САУ","k":"1.4"}],"options":[{"name":"Стрим боёв","pct":"15"}],"minPrice":"0","currency":"₽","note":"Цена ориентировочная. Для редкой и акционной техники уточняем стоимость в чате."},"stepsTitle":"Как это работает","steps":[{"title":"Пишешь нам","text":"Указываешь сервер (Мир танков или WoT), ник и задачу — например, 3 отметки на Об. 277. Сразу называем цену и срок."},{"title":"Оплачиваешь","text":"Удобным способом.."},{"title":"Бустер катает","text":"После каждой сессии — отчёт со скриншотами процента отметки, WN8 и прогресса."},{"title":"Забираешь результат","text":"Заканчиваем работу и советуем сменить пароль. Гарантия на выполненную цель."}],"perksTitle":"Почему нам доверяют","perks":[{"title":"Без запрещённых модов","text":"Используем только разрешённые моды."},{"title":"Возврат денег","text":"Если не достигли цели по нашей вине — вернём деньги за невыполненную часть."},{"title":"Конфиденциальность","text":"Данные аккаунта не передаются третьим лицам и удаляются после заказа."}],"faqTitle":"Частые вопросы","faq":[{"q":"С какими серверами работаете?","a":"Мир танков (Леста, RU) и World of Tanks (Wargaming, EU и NA). Укажи сервер при заказе."},{"q":"Могут ли забанить аккаунт?","a":"Мы играем честно, без запрещённых модов и с VPN твоего региона, поэтому риск минимален."},{"q":"Можно ли следить за процессом?","a":"Да. После каждой сессии присылаем статистику, а по запросу — стрим боёв."},{"q":"Какие способы оплаты?","a":"Карты, СБП и криптовалюта. Точные реквизиты — в личных сообщениях."}],"contacts":{"title":"Готов к трём отметкам?","text":"Напиши нам — ответим за пару минут и рассчитаем цену под твой аккаунт и технику.","telegram":"https://t.me/Valentin_boost","discord":"https://discord.gg/gutfg","email":""},"footer":"© 2026 TankUp. Сервис не связан с Lesta Games и Wargaming. «Мир танков» и World of Tanks — товарные знаки их владельцев."}</script>
 <script>
 (function(){
   var ORIGINAL = document.getElementById('site-data').textContent;
@@ -190,12 +239,14 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
       return '<div class="rung'+(i===n-1?' top':'')+'"><div style="height:'+pct.toFixed(0)+'%;animation-delay:'+(i*70)+'ms"></div><span>'+esc(r)+'</span></div>';
     }).join('');
     var cta = safeUrl(h.ctaLink);
+    var links = '<a href="#services">'+esc(d.servicesTitle)+'</a>'+(d.calc?'<a href="#calc">Калькулятор</a>':'')+'<a href="#steps">'+esc(d.stepsTitle)+'</a><a href="#faq">'+esc(d.faqTitle)+'</a><a href="#contacts">Контакты</a>';
     app.innerHTML =
-      '<header class="top"><div class="wrap">'+
+      '<header class="top" id="top"><div class="wrap">'+
         '<a class="logo" href="#"><i><b style="height:40%"></b><b style="height:70%"></b><b style="height:100%"></b></i>'+esc(d.brand)+'</a>'+
-        '<nav class="nav"><a href="#services">'+esc(d.servicesTitle)+'</a>'+(d.calc?'<a href="#calc">Калькулятор</a>':'')+'<a href="#steps">'+esc(d.stepsTitle)+'</a><a href="#faq">'+esc(d.faqTitle)+'</a><a href="#contacts">Контакты</a></nav>'+
+        '<nav class="nav">'+links+'</nav>'+
         '<a class="btn sm" href="'+esc(cta)+'" target="_blank" rel="noopener">'+esc(h.cta)+'</a>'+
-      '</div></header>'+
+        '<button type="button" class="burger" id="burger" aria-label="Меню" aria-expanded="false" aria-controls="mnav"><span></span><span></span><span></span></button>'+
+      '</div><nav class="mnav" id="mnav">'+links+'</nav></header>'+
       '<main>'+
       '<div class="wrap"><div class="hero"><div>'+
         '<div class="eyebrow">'+esc(h.eyebrow)+'</div>'+
@@ -206,7 +257,7 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
       ((d.stats||[]).length?'<div class="stats">'+d.stats.map(function(s){return '<div class="stat"><b>'+esc(s.value)+'</b><span>'+esc(s.label)+'</span></div>';}).join('')+'</div>':'')+
       '</div>'+
       '<section id="services"><div class="wrap"><h2>'+esc(d.servicesTitle)+'</h2><div class="services">'+
-        (d.services||[]).map(function(s){return '<article class="svc"><div class="game">'+esc(s.game)+'</div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="foot"><div><div class="price">'+esc(s.price)+'</div><span class="eta">'+esc(s.eta)+'</span></div><a class="btn sm" href="'+esc(cta)+'" target="_blank" rel="noopener">Заказать</a></div></article>';}).join('')+
+        (d.services||[]).map(function(s){return '<article class="svc"><div class="game">'+esc(s.game)+'</div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="foot"><div><div class="price">'+esc(s.price)+'</div><span class="eta">'+esc(s.eta)+'</span></div><div class="foot-btns">'+(d.calc&&/отметк/i.test(s.name)?'<a class="btn sm ghost" href="#calc">Рассчитать</a>':'')+'<a class="btn sm" href="'+esc(cta)+'" target="_blank" rel="noopener">Заказать</a></div></div></article>';}).join('')+
       '</div></div></section>'+
       calcHtml(d.calc)+
       '<section id="steps"><div class="wrap"><h2>'+esc(d.stepsTitle)+'</h2><div class="steps">'+
@@ -231,6 +282,53 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
     var al = document.getElementById('admin-link');
     if (al) al.onclick = function(e){e.preventDefault();openLogin();};
     bindCalc();
+    enhance();
+  }
+
+  /* ---------- comfort & motion ---------- */
+  var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var observers = [];
+  function toast(msg){
+    var t=document.getElementById('toast');
+    if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','status');document.body.appendChild(t);}
+    t.textContent=msg;t.classList.add('show');
+    clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show');},3200);
+  }
+  function enhance(){
+    observers.forEach(function(o){o.disconnect();});observers=[];
+    var header=document.getElementById('top'),burger=document.getElementById('burger'),mnav=document.getElementById('mnav');
+    // mobile menu
+    if(burger){
+      burger.onclick=function(){var open=header.classList.toggle('menu-open');burger.setAttribute('aria-expanded',String(open));};
+      mnav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){header.classList.remove('menu-open');burger.setAttribute('aria-expanded','false');});});
+    }
+    onScroll();
+    if(!('IntersectionObserver' in window))return;
+    // highlight the section you're in
+    var navLinks=[].slice.call(document.querySelectorAll('.nav a, .mnav a'));
+    var so=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var id='#'+e.target.id;navLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')===id);});}});},{rootMargin:'-45% 0px -50% 0px'});
+    document.querySelectorAll('section[id]').forEach(function(s){so.observe(s);});observers.push(so);
+    // reveal on scroll — only what's below the fold, never while editing
+    if(reduceMotion||editorOpen)return;
+    var items=[].slice.call(document.querySelectorAll('section h2, .svc, .step, .perk, .faq details, .calc-form, .result, .contact'));
+    var ro=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px'});
+    var vh=window.innerHeight;
+    items.forEach(function(el){
+      if(el.getBoundingClientRect().top<vh)return;
+      var sib=el.parentNode?[].indexOf.call(el.parentNode.children,el):0;
+      el.style.setProperty('--d',Math.min(sib,5)*70+'ms');
+      el.classList.add('reveal');ro.observe(el);
+    });
+    observers.push(ro);
+  }
+  function onScroll(){var h=document.getElementById('top');if(h)h.classList.toggle('scrolled',window.scrollY>8);}
+  window.addEventListener('scroll',onScroll,{passive:true});
+  function countTo(el,to,cur){
+    var from=el._val==null?to:el._val;el._val=to;
+    if(reduceMotion||from===to){el.textContent=money(to,cur);return;}
+    var t0=performance.now(),dur=420;cancelAnimationFrame(el._raf);
+    (function step(t){var k=Math.min(1,(t-t0)/dur);k=1-Math.pow(1-k,3);el.textContent=money(from+(to-from)*k,cur);if(k<1)el._raf=requestAnimationFrame(step);})(t0);
+    el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');
   }
 
   /* ---------- barrel marks calculator ---------- */
@@ -295,7 +393,10 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
     if(!r){tot.textContent='—';br.innerHTML='';return;}
     if(r.done){tot.textContent='—';br.innerHTML='<li class="done">На этом проценте цель уже достигнута — выбери отметку выше.</li>';order.hidden=true;return;}
     order.hidden=false;
-    tot.textContent=money(r.total,cur);
+    countTo(tot,r.total,cur);
+    var c=data.calc,tn=((c.tiers||[])[cs.tier]||{}).name,kn=((c.classes||[])[cs.cls]||{}).name;
+    var extra=(c.options||[]).filter(function(o,i){return cs.opts[i];}).map(function(o){return o.name;});
+    order.dataset.text='Здравствуйте! Хочу заказать отметки на стволе: '+cs.target+' отм., техника '+tn+' ур., '+kn+', сейчас '+cs.cur+'%'+(extra.length?', '+extra.join(', '):'')+'. По калькулятору: '+money(r.total,cur)+'.';
     br.innerHTML=r.lines.map(function(l){return '<li><span>'+esc(l[0])+'</span><b>'+(l[1]>=0?'+':'')+money(l[1],cur)+'</b></li>';}).join('');
   }
   function bindCalc(){
@@ -312,6 +413,8 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
     var rg=document.getElementById('calc-cur');
     rg.oninput=function(){cs.cur=+rg.value;updateCalc();};
     root.querySelectorAll('[data-opt]').forEach(function(cb){cb.onchange=function(){cs.opts[cb.getAttribute('data-opt')]=cb.checked;updateCalc();};});
+    var ord=document.getElementById('calc-order');
+    ord.onclick=function(){var t=ord.dataset.text;if(t&&navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast('Текст заказа скопирован — вставь его в чат');},function(){});}};
     updateCalc();
   }
 
@@ -458,7 +561,7 @@ footer{padding-block:32px 48px;color:var(--muted);font-size:13px}
         if(r.ok)j=await r.json();
       }
       if(!j){var r2=await fetch('content.json?t='+Date.now(),{cache:'no-store'});if(r2.ok)j=await r2.json();}
-      if(j){ORIGINAL=JSON.stringify(j);if(!editorOpen){data=j;applyDraft();render();}}
+      if(j){ORIGINAL=JSON.stringify(j);if(!editorOpen){var before=JSON.stringify(data);data=j;applyDraft();if(JSON.stringify(data)!==before)render();}}
     }catch(e){}
   }
   function applyDraft(){
