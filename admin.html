@@ -84,6 +84,14 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
 .d-head div{margin-right:auto;min-width:0}
 .d-head b{font:700 17px/1.1 var(--display);display:block}
 .d-head span{font-size:12px;color:var(--muted)}
+.d-creds{border-bottom:1px solid var(--line);padding:12px 16px;background:color-mix(in srgb,var(--blue) 8%,var(--surf))}
+.d-creds .h{font:700 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.d-creds .cr{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--line)}
+.d-creds .cr:last-child{border-bottom:0}
+.d-creds .cr b{color:var(--muted);font-weight:600;min-width:64px}
+.d-creds .cr code{font:14px/1.4 var(--body);overflow-wrap:anywhere;flex:1}
+.d-creds .cr button{background:var(--surf2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:5px 9px;font-size:12px;cursor:pointer;white-space:nowrap}
+.d-creds .lock{font-size:13px;color:var(--muted);margin:0}
 .d-feed{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
 .bubble{max-width:85%;padding:8px 11px 5px;border-radius:13px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
 .bubble time{display:block;font-size:11px;opacity:.65;text-align:right;margin-top:2px}
@@ -129,6 +137,7 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
 </div></main>
 <aside class="drawer" id="drawer" aria-label="Чат с клиентом" aria-hidden="true">
   <div class="d-head"><div><b id="d-code"></b><span id="d-sub"></span></div><button class="ib" id="d-close" type="button" title="Закрыть">✕</button></div>
+  <div class="d-creds" id="d-creds" hidden></div>
   <div class="d-feed" id="d-feed"></div>
   <form class="d-form" id="d-form"><textarea id="d-text" rows="1" maxlength="2000" placeholder="Ответ клиенту…" aria-label="Ответ клиенту"></textarea><button class="btn" id="d-send" type="submit">Отправить</button></form>
 </aside>
@@ -257,11 +266,26 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
       feed.innerHTML=ms.length?ms.map(function(m){return '<div class="bubble '+(m.author==='admin'?'admin':'client')+'">'+esc(m.body)+'<time>'+tm(m.created_at)+'</time></div>';}).join('')
         :'<div class="d-empty">Сообщений пока нет. Напиши клиенту первым — он увидит ответ в чате заявки.</div>';
       if(atBottom)feed.scrollTop=feed.scrollHeight;
-    }catch(e){if(e.status===401)showLogin('Сессия закончилась — войди снова');}
+      loadCreds();
+    }catch(e){if(e.status===401)showLogin('Сессия закончилась — войти снова');}
+  }
+  function copyText(t,btn){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){var o=btn.textContent;btn.textContent='✓';setTimeout(function(){btn.textContent=o;},1200);},function(){toast('Не удалось скопировать');});}
+  async function loadCreds(){
+    if(!chatOrder)return;var box=$('d-creds');
+    if(chatOrder.status==='done'||chatOrder.status==='rejected'||chatOrder.status==='new'){box.hidden=true;return;}
+    try{
+      var c=await api('credentials?select=login,password,note&order_id=eq.'+chatOrder.id);
+      box.hidden=false;
+      if(!c||!c.length){box.innerHTML='<div class="h">Данные для входа</div><p class="lock">Клиент ещё не передал логин и пароль.</p>';return;}
+      var cr=c[0];
+      var rows=[['Логин',cr.login],['Пароль',cr.password]];if(cr.note)rows.push(['Заметка',cr.note]);
+      box.innerHTML='<div class="h">Данные для входа</div>'+rows.map(function(r){return '<div class="cr"><b>'+esc(r[0])+'</b><code>'+esc(r[1])+'</code><button type="button" data-copy="'+esc(r[1])+'">Копировать</button></div>';}).join('');
+      box.querySelectorAll('[data-copy]').forEach(function(b){b.onclick=function(){copyText(b.getAttribute('data-copy'),b);};});
+    }catch(e){box.hidden=true;}
   }
   function openChat(id){
     chatOrder=orders.find(function(o){return o.id==id;});if(!chatOrder)return;
-    chatSig='';$('d-feed').innerHTML='<div class="d-empty">Загружаю…</div>';
+    chatSig='';$('d-feed').innerHTML='<div class="d-empty">Загружаю…</div>';$('d-creds').hidden=true;
     $('d-code').textContent='Чат · '+chatOrder.code;
     $('d-sub').textContent=[chatOrder.nick,chatOrder.service].filter(Boolean).join(' · ');
     $('drawer').classList.add('open');$('drawer').setAttribute('aria-hidden','false');
