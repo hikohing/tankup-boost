@@ -100,10 +100,16 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
 h1{font:700 30px/1.1 var(--display);margin:0}
 .muted{color:var(--muted);margin:0}
 .olist{display:flex;flex-direction:column;gap:10px}
-.oitem{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surf);text-decoration:none;transition:border-color .2s}
+.group-title{font:700 12px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 2px}
+.group-title:first-child{margin-top:4px}
+.oitem{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surf);text-decoration:none;transition:border-color .2s}
 .oitem:hover{border-color:var(--gold)}
 .oitem b{font:700 16px/1 var(--display);letter-spacing:.04em}
-.oitem span{color:var(--muted);font-size:14px;margin-right:auto}
+.oitem .svc{color:var(--muted);font-size:14px;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oitem .arrow{color:var(--muted)}
+.oitem.closed{opacity:.65}
+.opill{font:700 11px/1 var(--body);padding:5px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.st-new{color:var(--gold)}.st-accepted{color:var(--blue)}.st-in_progress{color:var(--violet)}.st-done{color:var(--ok)}.st-rejected{color:var(--danger)}
 .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--surf2);border:1px solid var(--gold);border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;transition:opacity .25s,transform .25s;z-index:20;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.msg{animation:none}}
@@ -195,10 +201,29 @@ h1{font:700 30px/1.1 var(--display);margin:0}
   window.addEventListener('hashchange',function(){location.reload();});
   var h=new URLSearchParams(location.hash.slice(1)), code=h.get('c'), key=h.get('k');
   if(!code||!key){
-    var l=mine();$('list-view').hidden=false;$('my-link').hidden=true;
-    if(!l.length)$('list-hint').textContent='С этого устройства заявок ещё не было. Ссылку на заказ ты получаешь сразу после отправки заявки.';
-    $('olist').innerHTML=l.map(function(o){return '<a class="oitem" href="chat.html#c='+encodeURIComponent(o.code)+'&k='+encodeURIComponent(o.key)+'"><b>'+esc(o.code)+'</b><span>'+esc(o.service||'')+'</span>→</a>';}).join('');
+    showList();
     return;
+  }
+
+  async function showList(){
+    var l=mine();$('list-view').hidden=false;$('my-link').hidden=true;
+    if(!l.length){$('list-hint').textContent='С этого устройства заявок ещё не было. Ссылку на заказ ты получаешь сразу после отправки заявки.';$('olist').innerHTML='';return;}
+    var CLOSED={done:1,rejected:1}, LBL={new:'Новая',accepted:'Принята',in_progress:'В работе',done:'Выполнена',rejected:'Отклонена'};
+    function item(o,st){
+      var pill=st?'<span class="opill st-'+st+'">'+esc(LBL[st]||st)+'</span>':'';
+      return '<a class="oitem'+(st&&CLOSED[st]?' closed':'')+'" href="chat.html#c='+encodeURIComponent(o.code)+'&k='+encodeURIComponent(o.key)+'"><b>'+esc(o.code)+'</b><span class="svc">'+esc(o.service||'')+'</span>'+pill+'<span class="arrow">→</span></a>';
+    }
+    // мгновенно показываем без статусов, затем подтягиваем и группируем
+    $('olist').innerHTML=l.map(function(o){return item(o,null);}).join('');
+    var stt=await Promise.all(l.map(function(o){
+      return rpc('chat_get',{p_code:o.code,p_key:o.key}).then(function(d){return d?d.status:'gone';}).catch(function(){return null;});
+    }));
+    var open=[],closed=[];
+    l.forEach(function(o,i){var st=stt[i];if(st==='gone')return;(st&&CLOSED[st]?closed:open).push(item(o,st));});
+    var html='';
+    if(open.length)html+='<div class="group-title">Открытые</div>'+open.join('');
+    if(closed.length)html+='<div class="group-title">Закрытые</div>'+closed.join('');
+    $('olist').innerHTML=html||'<p class="muted">Заявки не найдены — возможно, они удалены.</p>';
   }
 
   var order=null, terms=null, lastMsgSig='', lastInfoSig='', timer=null, sending=false, credsEditing=false, started=false;
